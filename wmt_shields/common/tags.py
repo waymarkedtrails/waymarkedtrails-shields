@@ -35,6 +35,13 @@ class Tags(object):
 
         return default
 
+    def first_starting_with(self, prefix):
+        for k, v in self._tags.items():
+            if k.startswith(prefix):
+                return k, v
+
+        return None, None
+
 
     def make_ref(self, maxlen=5, refs=('ref',), names=('name',)):
         """ Return a reference for the object. The function looks first for

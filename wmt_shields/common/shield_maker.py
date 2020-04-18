@@ -22,8 +22,7 @@ import cairo
 import gi
 gi.require_version('Pango', '1.0')
 gi.require_version('PangoCairo', '1.0')
-gi.require_version('Rsvg', '2.0')
-from gi.repository import Pango, PangoCairo, Rsvg
+from gi.repository import Pango, PangoCairo
 
 
 class ShieldMaker(object):
@@ -163,14 +162,29 @@ class RefShieldMaker(ShieldMaker):
         """
         return self.uuid_prefix + ''.join(["%04x" % ord(x) for x in self.ref])
 
-    def _get_text_size(self):
+    def _get_text_size(self, fnt):
         """ Compute the rendered size of `self.ref` in pixels.
         """
-        txtctx_layout = PangoCairo.create_layout(
-                           cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 10,10)))
-        fnt = self.config.text_font
-        if fnt is not None:
-            txtctx_layout.set_font_description(Pango.FontDescription(fnt))
-        txtctx_layout.set_text(self.ref, -1)
+        l, _, _ = self.layout_ref(
+                cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 10,10)), fnt)
+        return l.get_pixel_size()
 
-        return txtctx_layout.get_pixel_size()
+    def layout_ref(self, ctx, fnt):
+        layout = PangoCairo.create_layout(ctx)
+        if fnt is not None:
+            layout.set_font_description(Pango.FontDescription(fnt))
+        layout.set_text(self.ref, -1)
+        tw, _ = layout.get_pixel_size()
+        baseh = layout.get_iter().get_baseline()/Pango.SCALE
+
+        return layout, tw, baseh
+
+    def render_layout(self, ctx, layout, color, x, y):
+        if color is None:
+            ctx.set_source_rgb(1., 1., 1.) # black
+        else:
+            ctx.set_source_rgb(*color)
+
+        PangoCairo.update_layout(ctx, layout)
+        ctx.move_to(x, y)
+        PangoCairo.show_layout(ctx, layout)

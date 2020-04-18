@@ -16,12 +16,6 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import re
-import gi
-gi.require_version('Pango', '1.0')
-gi.require_version('PangoCairo', '1.0')
-gi.require_version('Rsvg', '2.0')
-from gi.repository import Pango, PangoCairo, Rsvg
-
 
 from ..common.tags import Tags
 from ..common.config import ShieldConfig
@@ -38,7 +32,7 @@ class CaiHikingSymbol(RefShieldMaker):
         self.uuid_prefix = "cai_{}_{}_".format(self.config.style or 'red', self.typ)
 
     def dimensions(self):
-        tw, _ = self._get_text_size()
+        tw, _ = self._get_text_size(self.config.text_font)
 
         # create an image where the text fits
         w = int(tw + 2 * self.config.cai_border_width)
@@ -70,17 +64,14 @@ class CaiHikingSymbol(RefShieldMaker):
             ctx.fill()
 
         # reference text
-        ctx.set_source_rgb(*self.config.text_color)
-        layout = PangoCairo.create_layout(ctx)
-        layout.set_font_description(Pango.FontDescription(self.config.text_font))
-        layout.set_text(self.ref, -1)
-        tw, _ = layout.get_pixel_size()
-        PangoCairo.update_layout(ctx, layout)
-        y = (h-layout.get_iter().get_baseline()/Pango.SCALE)/2.0
+        layout, tw, baseh = self.layout_ref(ctx, self.config.text_font)
+
+        y = (h - baseh)/2.0
         if self.typ == 'bar':
             y -= 1
-        ctx.move_to((w-tw)/2, y)
-        PangoCairo.show_layout(ctx, layout)
+
+        self.render_layout(ctx, layout, color=self.config.text_color,
+                           x=(w-tw)/2.0, y=y)
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):

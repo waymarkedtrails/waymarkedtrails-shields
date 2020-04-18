@@ -15,13 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-import cairo
-import gi
-gi.require_version('Pango', '1.0')
-gi.require_version('PangoCairo', '1.0')
-gi.require_version('Rsvg', '2.0')
-from gi.repository import Pango, PangoCairo, Rsvg
-
 from ..common.tags import Tags
 from ..common.config import ShieldConfig
 from ..common.shield_maker import RefShieldMaker
@@ -38,13 +31,12 @@ class RefColorSymbol(RefShieldMaker):
         self.uuid_prefix = "ctb_{}_{}_".format(self.config.style or '', name)
 
     def dimensions(self):
-        tw, _ = self._get_text_size()
+        tw, _ = self._get_text_size(self.config.text_font)
         text_border = self.config.text_border_width or 1.5
         image_border = self.config.image_border_width or 2.5
         w = int(tw + 2 * text_border + 2 * image_border)
         h = int((self.config.image_height or 16) + image_border)
         return (w, h)
-
 
     def render(self, ctx, w, h):
         self.render_background(ctx, w, h, (1., 1., 1.))
@@ -63,33 +55,12 @@ class RefColorSymbol(RefShieldMaker):
         ctx.fill()
 
         ## reference text
-        txtcol = self.config.text_color or (0, 0, 0)
-        ctx.set_source_rgb(*txtcol)
-        layout = PangoCairo.create_layout(ctx)
-        fnt = self.config.text_font
-        if fnt is not None:
-            layout.set_font_description(Pango.FontDescription(fnt))
-        layout.set_text(self.ref, -1)
-        tw, th = layout.get_pixel_size()
+        layout, tw, baseh = self.layout_ref(ctx, self.config.text_font)
+
         bnd_wd = self.config.text_border_width or 1.5
-        PangoCairo.update_layout(ctx, layout)
-        ctx.move_to((w - tw)/2,
-                    (h - bnd_wd - layout.get_iter().get_baseline()/Pango.SCALE)/2.0)
-        PangoCairo.show_layout(ctx, layout)
 
-
-    def _get_text_size(self):
-        """ Comute the rendered size of the ref in pixels.
-        """
-        txtctx_layout = PangoCairo.create_layout(
-                           cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 10,10)))
-        fnt = self.config.text_font
-        if fnt is not None:
-            txtctx_layout.set_font_description(Pango.FontDescription(fnt))
-        txtctx_layout.set_text(self.ref, -1)
-
-        return txtctx_layout.get_pixel_size()
-
+        self.render_layout(ctx, layout, color=self.config.text_color or (0, 0, 0),
+                           x=(w - tw)/2, y=(h - bnd_wd - baseh)/2.0)
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
