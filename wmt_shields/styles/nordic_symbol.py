@@ -15,17 +15,36 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-import os
+from math import pi
 
 from ..common.tags import Tags
 from ..common.config import ShieldConfig
-from .image_symbol import ImageSymbol
+from ..common.shield_maker import ShieldMaker
+
+class ColorBoxSymbol(ShieldMaker):
+    """ A shield with a typical sign for nordic ski piste.
+    """
+
+    def __init__(self, name, color, config):
+        self.config = config
+        self.color = color
+        self.colorname = name
+
+    def uuid(self):
+        return "nordic_{}_{}".format(self.config.style or '', self.colorname)
+
+    def render(self, ctx, w, h):
+        ctx.arc(w/2, h/2, w/2, 0, 2*pi)
+        ctx.set_source_rgb(*self.color)
+        ctx.fill()
+
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
-    ref = tags.get('jel')
-    if ref is None or ref not in config.jel_types:
+    if tags.get('piste:type') != 'nordic':
         return None
 
-    uuid = 'jel_{}_' + ref
-    fn = os.path.join(config.jel_path, ref + '.svg')
-    return ImageSymbol(uuid, fn, config)
+    color = tags.as_color(('color', 'colour'), config.color_names or {})
+    if color is None:
+        return None
+
+    return ColorBoxSymbol(*color, config)

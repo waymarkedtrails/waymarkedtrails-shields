@@ -76,7 +76,8 @@ class ShieldMaker(object):
         """ Create a border around the image if that was configured.
         """
         border_width = self.config.image_border_width or 0
-        if border_width <= 0:
+        color = self.config.border_color
+        if border_width <= 0 or color is None:
             return
 
         ctx.rectangle(0, 0, w, h)

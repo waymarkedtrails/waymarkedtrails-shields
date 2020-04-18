@@ -42,6 +42,12 @@ class Tags(object):
 
         return None, None
 
+    def matches_tags(self, tags):
+        for k,v in tags.items():
+            if self._tags.get(k) != v:
+                return False
+
+        return True
 
     def make_ref(self, maxlen=5, refs=('ref',), names=('name',)):
         """ Return a reference for the object. The function looks first for
