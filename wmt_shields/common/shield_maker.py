@@ -3,6 +3,7 @@
 # This file is part of the Waymarked Trails Map Project
 # Copyright (C) 2011-2020 Sarah Hoffmann
 
+import sys
 from io import BytesIO
 from xml.dom.minidom import parseString as xml_parse
 from xml.parsers.expat import ExpatError
@@ -12,6 +13,25 @@ import gi
 gi.require_version('Pango', '1.0')
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import Pango, PangoCairo
+
+def load_shield_maker(spec):
+    """ Return a shield maker object. An object may either be a class with
+        a static `create_for` function or a string with a module containing a
+        `create_for` function. If the string starts with a dot, then it is
+        assumed to be one of the internal styles in the `wmt_shields.styles`
+        directory.
+    """
+    if isinstance(spec, str):
+        if spec.startswith('.'):
+            spec = 'wmt_shields.styles' + spec
+        try:
+            __import__(spec)
+            return sys.modules[spec]
+        except ImportError:
+            print("Style '{}' not found.".format(spec))
+            raise
+
+    return spec
 
 
 class ShieldMaker(object):
