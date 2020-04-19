@@ -26,6 +26,6 @@ def create_for(tags: Tags, region: str, config: ShieldConfig):
     if ref is None or ref not in config.jel_types:
         return None
 
-    uuid = 'jel_{}_' + ref
-    fn = os.path.join(config.jel_path, ref + '.svg')
+    uuid = f'jel_{{}}_{ref}'
+    fn = os.path.join(config.jel_path, f'{ref}.svg')
     return ImageSymbol(uuid, fn, config)

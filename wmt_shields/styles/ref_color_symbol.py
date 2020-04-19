@@ -28,7 +28,7 @@ class RefColorSymbol(RefShieldMaker):
         self.config = config
         self.ref = ref
         self.color = color
-        self.uuid_prefix = "ctb_{}_{}_".format(self.config.style or '', name)
+        self.uuid_pattern = f'ctb_{{}}_{name}_{self.ref_uuid()}'
 
     def dimensions(self):
         tw, _ = self._get_text_size(self.config.text_font)

@@ -25,10 +25,7 @@ class RefSymbol(RefShieldMaker):
     def __init__(self, ref, config):
         self.config = config
         self.ref = ref
-        if self.config.style:
-            self.uuid_prefix = "ref_{}_".format(self.config.style)
-        else:
-            self.uuid_prefix = "ref_"
+        self.uuid_pattern = f'ref_{{}}_{self.ref_uuid()}'
 
     def dimensions(self):
         tw, _ = self._get_text_size(self.config.text_font)

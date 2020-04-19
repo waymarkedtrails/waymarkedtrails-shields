@@ -29,7 +29,7 @@ class CaiHikingSymbol(RefShieldMaker):
         self.config = config
         self.typ = typ
         self.ref = ref
-        self.uuid_prefix = "cai_{}_{}_".format(self.config.style or 'red', self.typ)
+        self.uuid_pattern = f"cai_{{}}_{typ}_{self.ref_uuid()}"
 
     def dimensions(self):
         tw, _ = self._get_text_size(self.config.text_font)

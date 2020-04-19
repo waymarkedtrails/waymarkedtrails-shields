@@ -30,7 +30,20 @@ class ShieldMaker(object):
         functionality.
     """
 
+    def uuid(self):
+        """ Return a unique identifier also usable as a filename. the default
+            implementation expects a field `uuid_pattern` which needs to have
+            one `{}` placeholder for the style name. If that is not sufficient
+            then implentations may also just overwrite this function.
+        """
+        return self.uuid_pattern.format(self.config.style or 'None')
+
     def dimensions(self):
+        """ Return a tuple of width and height of the final image (including
+            borders). The default implementation returns `image_width` and
+            `image_height` from the configurations. Implementations may
+            override the function for custom sizes.
+        """
         return (self.config.image_width or 16, self.config.image_height or 16)
 
     def to_file(self, filename, format='svg'):
@@ -157,11 +170,8 @@ class RefShieldMaker(ShieldMaker):
         size.
     """
 
-    def uuid(self):
-        """ Compute the uuid from a `self.prefix` and the properly
-            encoded `self.ref`.
-        """
-        return self.uuid_prefix + ''.join(["%04x" % ord(x) for x in self.ref])
+    def ref_uuid(self):
+        return ''.join(["%04x" % ord(x) for x in self.ref])
 
     def _get_text_size(self, fnt):
         """ Compute the rendered size of `self.ref` in pixels.

@@ -26,10 +26,7 @@ class ColorBoxSymbol(ShieldMaker):
     def __init__(self, name, color, config):
         self.config = config
         self.color = color
-        self.colorname = name
-
-    def uuid(self):
-        return "cbox_{}_{}".format(self.config.style or '', self.colorname)
+        self.uuid_pattern = f'cbox_{{}}_{name}'
 
     def render(self, ctx, w, h):
         self.render_background(ctx, w, h, self.color)

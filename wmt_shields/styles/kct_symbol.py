@@ -33,12 +33,9 @@ class KctSymbol(ShieldMaker):
 
     def __init__(self, color, symbol, config):
         self.config = config
+        self.uuid_pattern = f'kct_{{}}_{color}-{symbol}'
         self.color = color
         self.symbol = symbol
-
-    def uuid(self):
-        return 'kct_{}_{}-{}'.format(self.config.style or '',
-                                     self.color, self.symbol)
 
     def dimensions(self):
         bwidth = self.config.image_border_width or 0
@@ -48,7 +45,7 @@ class KctSymbol(ShieldMaker):
     def render(self, ctx, w, h):
         # get the template file
         fn = os.path.join(self.config.data_dir, self.config.kct_path,
-                          "%s.svg" % self.symbol)
+                          f'{self.symbol}.svg')
         with open(fn, 'r') as fd:
             content = fd.read()
         # patch in the correct color

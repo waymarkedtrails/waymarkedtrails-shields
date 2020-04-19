@@ -36,9 +36,6 @@ class ImageSymbol(ShieldMaker):
         else:
             self.filename = os.path.join(self.config.data_dir, filename)
 
-    def uuid(self):
-        return self.uuid_pattern.format(self.config.style or '')
-
     def render(self, ctx, w, h):
         rhdl = Rsvg.Handle.new_from_file(self.filename)
         dim = rhdl.get_dimensions()
@@ -50,8 +47,8 @@ class ImageSymbol(ShieldMaker):
 def create_for(tags: Tags, region: str, config: ShieldConfig):
     for name, stags in config.shield_names.items():
         if tags.matches_tags(stags):
-            uuid = 'shield_{}_' + name
-            fn = os.path.join(config.shield_path, name + '.svg')
+            uuid = f'shield_{{}}_{name}'
+            fn = os.path.join(config.shield_path, f'{name}.svg')
             return ImageSymbol(uuid, fn, config)
 
     return None

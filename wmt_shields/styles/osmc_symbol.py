@@ -69,10 +69,10 @@ class OsmcSymbol(RefShieldMaker):
             if part is not None:
                 parts.append(part)
         if self.ref:
-            parts.append(''.join(["%04x" % ord(x) for x in self.ref]))
+            parts.append(self.ref_uuid())
             parts.append(self.textcolor)
 
-        return '-'.join(parts)
+        return '_'.join(parts)
 
     def render(self, ctx, w, h):
         ctx.save()
@@ -92,7 +92,7 @@ class OsmcSymbol(RefShieldMaker):
 
         if self.bgsymbol is not None:
             ctx.set_source_rgb(*self.config.osmc_colors[self.bgcolor])
-            func = getattr(self, 'paint_bg_' + self.bgsymbol)
+            func = getattr(self, f'paint_bg_{self.bgsymbol}')
             func(ctx)
             # with a background image, make the foreground image a bit
             # smaller, so that it fits
@@ -103,7 +103,7 @@ class OsmcSymbol(RefShieldMaker):
         if self.fgsymbol is not None:
             ctx.set_source_rgb(*self.config.osmc_colors[self.fgcolor])
             ctx.set_line_width(0.3)
-            func = getattr(self, 'paint_fg_' + self.fgsymbol)
+            func = getattr(self, f'paint_fg_{self.fgsymbol}')
             func(ctx)
 
         ctx.restore()

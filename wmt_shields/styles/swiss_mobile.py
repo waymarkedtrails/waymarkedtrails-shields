@@ -26,7 +26,7 @@ class SwissMobileSymbol(RefShieldMaker):
     def __init__(self, ref, config):
         self.config = config
         self.ref = ref.strip()[:5]
-        self.uuid_prefix = 'swiss_'
+        self.uuid_pattern = f'swiss_{{}}_{self.ref_uuid()}'
 
     def dimensions(self):
         return 8 + len(self.ref) * 7, self.config.image_height or 16
