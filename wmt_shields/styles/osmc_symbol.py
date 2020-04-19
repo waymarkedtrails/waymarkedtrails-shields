@@ -373,16 +373,13 @@ class OsmcSymbol(RefShieldMaker):
         self._src_from_svg(ctx, 'wheel.svg')
 
     def _src_from_svg(self, ctx, name):
-        fn = os.path.join(self.config.data_dir, self.config.osmc_path, name)
-        if self.fgcolor is None:
-            svg = Rsvg.Handle.new_from_file(fn)
-        else:
-            with open(fn, 'r') as fd:
-                content = fd.read()
+        content = self.find_resource(self.config.osmc_path, name)
+        if self.fgcolor is not None:
             fgcol = tuple([int(x*255) for x in self.config.osmc_colors[self.fgcolor]])
             color = '#%02x%02x%02x' % fgcol
-            content = re.sub('#000000', color, content)
-            svg = Rsvg.Handle.new_from_data(content.encode())
+            content = re.sub('#000000', color, content.decode('utf8')).encode()
+
+        svg = Rsvg.Handle.new_from_data(content)
 
         w, h = self.dimensions()
         b = self.config.image_border_width

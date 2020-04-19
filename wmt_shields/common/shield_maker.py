@@ -4,6 +4,8 @@
 # Copyright (C) 2011-2020 Sarah Hoffmann
 
 import sys
+import pkg_resources
+import os
 from io import BytesIO
 from xml.dom.minidom import parseString as xml_parse
 from xml.parsers.expat import ExpatError
@@ -54,6 +56,24 @@ class ShieldMaker(object):
             override the function for custom sizes.
         """
         return (self.config.image_width or 16, self.config.image_height or 16)
+
+    def find_resource(self, subdir, filename):
+        if os.path.isabs(filename):
+            return filename
+
+        if subdir is not None \
+           and (os.path.isabs(subdir) or subdir.startswith('{data}')):
+            abspath = os.path.join(subdir, filename)
+        else:
+            abspath = os.path.join(self.config.data_dir or '', subdir or '',
+                                   filename)
+
+        if abspath.startswith('{data}'):
+            return pkg_resources.resource_string('wmt_shields',
+                                                 os.path.join('data',
+                                                              abspath[7:]))
+
+        return os.path.join(abspath, filename)
 
     def to_file(self, filename, format='svg'):
         """ Render the shield into the file `filename` using the output format

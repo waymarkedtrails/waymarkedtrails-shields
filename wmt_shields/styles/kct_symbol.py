@@ -32,10 +32,7 @@ class KctSymbol(ShieldMaker):
 
     def render(self, ctx, w, h):
         # get the template file
-        fn = os.path.join(self.config.data_dir, self.config.kct_path,
-                          f'{self.symbol}.svg')
-        with open(fn, 'r') as fd:
-            content = fd.read()
+        content = self.find_resource(self.config.kct_path, f'{self.symbol}.svg').decode('utf8')
         # patch in the correct color
         fgcol = tuple([int(x*255) for x in self.config.kct_colors[self.color]])
         color = '#%02x%02x%02x' % fgcol

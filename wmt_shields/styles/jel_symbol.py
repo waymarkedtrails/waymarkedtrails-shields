@@ -15,5 +15,4 @@ def create_for(tags: Tags, region: str, config: ShieldConfig):
         return None
 
     uuid = f'jel_{{}}_{ref}'
-    fn = os.path.join(config.jel_path, f'{ref}.svg')
-    return ImageSymbol(uuid, fn, config)
+    return ImageSymbol(uuid, config.jel_path, f'{ref}.svg', config)

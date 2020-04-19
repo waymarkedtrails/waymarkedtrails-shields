@@ -16,16 +16,15 @@ class ImageSymbol(ShieldMaker):
     """ A shield with an arbitrary SVG image.
     """
 
-    def __init__(self, uuid, filename, config):
+    def __init__(self, uuid, path, filename, config):
         self.config = config
         self.uuid_pattern = uuid
-        if filename.startswith('/'):
-            self.filename = filename
-        else:
-            self.filename = os.path.join(self.config.data_dir, filename)
+        self.path = path
+        self.filename = filename
 
     def render(self, ctx, w, h):
-        rhdl = Rsvg.Handle.new_from_file(self.filename)
+        data = self.find_resource(self.path, self.filename)
+        rhdl = Rsvg.Handle.new_from_data(data)
         dim = rhdl.get_dimensions()
 
         ctx.scale(w/dim.width, h/dim.height)
@@ -36,7 +35,6 @@ def create_for(tags: Tags, region: str, config: ShieldConfig):
     for name, stags in config.shield_names.items():
         if tags.matches_tags(stags):
             uuid = f'shield_{{}}_{name}'
-            fn = os.path.join(config.shield_path, f'{name}.svg')
-            return ImageSymbol(uuid, fn, config)
+            return ImageSymbol(uuid, config.shield_path, f'{name}.svg', config)
 
     return None

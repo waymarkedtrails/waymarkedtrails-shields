@@ -6,6 +6,8 @@
 class WmtConfig(object):
     """ Default configuration as used by the waymarkedtrails project.
     """
+    data_dir = "{data}"
+
     image_height = 15
     image_width = 15
     image_border_width = 2.5
