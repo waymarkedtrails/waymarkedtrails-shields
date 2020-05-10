@@ -23,7 +23,7 @@ Simply install with setup tools:
 Usage
 -----
 
-For usage plaese have a look at `test/render_test.py`.
+For usage please have a look at `test/render_test.py`.
 
 Copyright
 ---------
