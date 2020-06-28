@@ -21,6 +21,6 @@ setup(name='waymarkedtrails-shields',
                 'wmt_shields.common',
                 'wmt_shields.styles'
                ],
-      package_data = { 'wmt_shields' : [ 'data/jel/**', 'data/kct/**', 'data/osmc/**' ] },
+      package_data = { 'wmt_shields' : [ 'data/jel/**', 'data/kct/**', 'data/osmc/**', 'data/shields/**' ] },
       python_requires = ">=3.6",
       )
