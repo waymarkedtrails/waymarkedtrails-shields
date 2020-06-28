@@ -22,7 +22,7 @@ class SlopeSymbol(RefShieldMaker):
     def render(self, ctx, w, h):
         # background fill
         ctx.arc(w/2, h/2, w/2, 0, 2*pi)
-        color = self.config.slope_color
+        color = self.config.slope_colors[min(self.config.difficulty or 7, 7)]
         ctx.set_source_rgb(*color)
         ctx.fill()
 
