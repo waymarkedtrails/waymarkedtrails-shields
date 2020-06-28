@@ -60,7 +60,7 @@ def create_for(tags: Tags, region: str, config: ShieldConfig):
     if color is None:
         return None
 
-    if color[0].startswith('#'):
+    if len(color[1]) == 3:
         return RefColorSymbol(ref, color[0], (color[1], (1., 1., 1.)), config)
 
     return RefColorSymbol(ref, *color, config)

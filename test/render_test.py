@@ -150,6 +150,7 @@ if __name__ == "__main__":
         ('NAT', '', { 'ref' : 'XXX', 'colour' : 'violet'}),
         ('NAT', '', { 'ref' : 'XXX', 'colour' : 'white'}),
         ('NAT', '', { 'ref' : 'XXX', 'colour' : 'yellow'}),
+        ('NAT', '', { 'ref' : 'XXX', 'colour' : '#ee0000'}),
         ('downhill', '', { 'piste:type' : 'nordic', 'colour' : '#0000FF'}),
         ('novice', '', { 'piste:type' : 'downhill', 'piste:difficulty' : 'novice'}),
         ('novice', '', { 'piste:type' : 'downhill', 'piste:ref' : 'XX'}),
