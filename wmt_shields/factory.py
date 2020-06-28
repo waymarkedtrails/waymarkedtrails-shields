@@ -9,6 +9,21 @@ from .common.shield_maker import load_shield_maker
 
 class ShieldFactory(object):
     """ A shield factory renders a shield according to the configured styles.
+
+        `styles` contains the list of styles to be renderable. Order matters.
+        When creating a shield maker, the factory returns a shield maker for
+        the first style that matches the given tags. A style can be one of three
+        formats:
+
+        * A string starting with a dot. The one of the system styles from
+          the `styles` directory is used.
+        * A string pointing to a loadable module.
+        * A style object.
+
+        Both, module and style object must supply a single function
+        `create_for(tags: Tags, region: str, config: ShieldConfig)` which
+        takes a list of tags, a string describing the region and a pointer
+        to the configuration to use. It must return a ShieldMaker object.
     """
 
     def __init__(self, styles, config):
