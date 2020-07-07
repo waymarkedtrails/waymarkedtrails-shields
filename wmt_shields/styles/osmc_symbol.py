@@ -110,7 +110,7 @@ class OsmcSymbol(RefShieldMaker):
         pass # field is ignored at the moment
 
     def _init_bg_symbol(self, symbol):
-        parts = symbol.split('_', 2)
+        parts = symbol.split('_', 1)
 
         if parts[0] in self.config.osmc_colors:
             self.bgcolor = parts[0]
@@ -123,7 +123,7 @@ class OsmcSymbol(RefShieldMaker):
             self.fgsymbol = symbol
             self.fgcolor = 'yellow' if symbol.startswith('shell') else 'black'
         else:
-            parts = symbol.split('_', 2)
+            parts = symbol.split('_', 1)
             if len(parts) > 1 and hasattr(self, 'paint_fg_' + parts[1]):
                 self.fgsymbol = parts[1]
                 self.fgcolor = parts[0] if parts[0] in self.config.osmc_colors else 'black'
