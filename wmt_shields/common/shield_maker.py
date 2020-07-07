@@ -73,7 +73,10 @@ class ShieldMaker(object):
                                                  os.path.join('data',
                                                               abspath[7:]))
 
-        return os.path.join(abspath, filename)
+        with open(abspath, 'r') as f:
+            content = f.read()
+
+        return content.encode()
 
     def to_file(self, filename, format='svg'):
         """ Render the shield into the file `filename` using the output format
