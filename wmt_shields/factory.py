@@ -23,7 +23,8 @@ class ShieldFactory(object):
         Both, module and style object must supply a single function
         `create_for(tags: Tags, region: str, config: ShieldConfig)` which
         takes a list of tags, a string describing the region and a pointer
-        to the configuration to use. It must return a ShieldMaker object.
+        to the configuration to use. It must return a ShieldMaker object
+        or None if the style is not responsible for these kind of tags.
     """
 
     def __init__(self, styles, config):
