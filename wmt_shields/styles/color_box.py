@@ -11,18 +11,18 @@ class ColorBoxSymbol(ShieldMaker):
     """ A shield with nothing but a background color.
     """
 
-    def __init__(self, name, color, config):
+    def __init__(self, color, config):
         self.config = config
-        self.color = color
-        self.uuid_pattern = f'cbox_{{}}_{name}'
+        self.color = color.rgb
+        self.uuid_pattern = f'cbox_{{}}_{color.name}'
 
     def render(self, ctx, w, h):
         self.render_background(ctx, w, h, self.color)
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
-    color = tags.as_color(('color', 'colour'), config.color_names or {})
+    color = tags.as_color(color_names=config.color_names or {})
     if color is None:
         return None
 
-    return ColorBoxSymbol(*color, config)
+    return ColorBoxSymbol(color, config)

@@ -54,8 +54,8 @@ def create_for(tags: Tags, region: str, config: ShieldConfig):
             return KctSymbol(col, sym, config)
 
     # Czech system
-    k, v = tags.first_starting_with('kct_')
-    if k is not None and k[4:] in config.kct_colors and v in config.kct_types:
-        return KctSymbol(k[4:], v, config)
+    tag = tags.starting_with('kct_')
+    if tag is not None and tag.k[4:] in config.kct_colors and tag.v in config.kct_types:
+        return KctSymbol(tag.k[4:], tag.v, config)
 
     return None

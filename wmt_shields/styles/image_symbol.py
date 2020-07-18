@@ -33,7 +33,7 @@ class ImageSymbol(ShieldMaker):
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
     for name, stags in config.shield_names.items():
-        if tags.matches_tags(stags):
+        if tags.contains_all_tags(stags):
             uuid = f'shield_{{}}_{name}'
             return ImageSymbol(uuid, config.shield_path, f'{name}.svg', config)
 

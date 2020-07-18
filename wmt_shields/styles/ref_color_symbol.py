@@ -12,10 +12,11 @@ class RefColorSymbol(RefShieldMaker):
         color tag.
     """
 
-    def __init__(self, ref, name, color, config):
+    def __init__(self, ref, name, fgcolor, bgcolor, config):
         self.config = config
         self.ref = ref
-        self.color = color
+        self.fgcolor = fgcolor
+        self.bgcolor = bgcolor
         self.uuid_pattern = f'ctb_{{}}_{name}_{self.ref_uuid()}'
 
     def dimensions(self):
@@ -33,11 +34,11 @@ class RefColorSymbol(RefShieldMaker):
 
         # bar with halo
         ctx.set_line_width(0)
-        ctx.set_source_rgb(*self.color[1])
+        ctx.set_source_rgb(*self.bgcolor)
         ctx.rectangle(image_border + 1.8, h - 3.2 - image_border,
                       w - 2 * (image_border + 1.8) , 3.4)
         ctx.fill()
-        ctx.set_source_rgb(*self.color[0])
+        ctx.set_source_rgb(*self.fgcolor)
         ctx.rectangle(image_border + 2, h - 3 - image_border,
                       w - 2 * (image_border + 2) , 3)
         ctx.fill()
@@ -56,11 +57,11 @@ def create_for(tags: Tags, region: str, config: ShieldConfig):
     if ref is None:
         return None
 
-    color = tags.as_color(('color', 'colour'), config.colorbox_names or {})
+    color = tags.as_color(color_names=config.colorbox_names or {})
     if color is None:
         return None
 
-    if len(color[1]) == 3:
-        return RefColorSymbol(ref, color[0], (color[1], (1., 1., 1.)), config)
+    if len(color.rgb) == 3:
+        return RefColorSymbol(ref, color.name, color.rgb, (1., 1., 1.), config)
 
-    return RefColorSymbol(ref, *color, config)
+    return RefColorSymbol(ref, color.name, *color.rgb, config)
