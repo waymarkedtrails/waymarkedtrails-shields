@@ -59,9 +59,8 @@ class ShieldMaker(object):
 
     def find_resource(self, subdir, filename):
         if os.path.isabs(filename):
-            return filename
-
-        if subdir is not None \
+            abspath = filename
+        elif subdir is not None \
            and (os.path.isabs(subdir) or subdir.startswith('{data}')):
             abspath = os.path.join(subdir, filename)
         else:
