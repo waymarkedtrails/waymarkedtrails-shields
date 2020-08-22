@@ -8,6 +8,7 @@ from pathlib import Path
 
 from wmt_shields.common.shield_maker import load_shield_maker, ShieldMaker
 from wmt_shields.common.config import ShieldConfig
+from wmt_shields.common.tags import Tags
 from wmt_shields import ShieldFactory
 from wmt_shields.styles.ref_symbol import RefSymbol
 
@@ -109,3 +110,33 @@ class TestBaseShieldMaker(unittest.TestCase):
 
         self.assertEqual(1298, len(t.find_resource('{data}', 'osmc/hiker.svg')))
         self.assertEqual(1298, len(t.find_resource(None, 'hiker.svg')))
+
+
+class RefFactory(object):
+    @staticmethod
+    def create_for(tags: Tags, region: str, config: ShieldConfig):
+        if tags.first_of('ref'):
+            return RefFactory()
+
+class NameFactory(object):
+    @staticmethod
+    def create_for(tags: Tags, region: str, config: ShieldConfig):
+        if tags.first_of('name'):
+            return NameFactory()
+
+class TestShieldFactory(unittest.TestCase):
+
+    def test_factory(self):
+        f = ShieldFactory([RefFactory(), NameFactory()], NullConfig())
+
+        self.assertIsNone(f.create({}, ''))
+
+        s = f.create({'name' : 'x'}, '')
+        self.assertIsInstance(s, NameFactory)
+
+        s = f.create({'ref' : 'x'}, '')
+        self.assertIsInstance(s, RefFactory)
+
+        s = f.create({'name' : 'x', 'ref' : '5'}, '')
+        self.assertIsInstance(s, RefFactory)
+

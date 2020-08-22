@@ -39,20 +39,20 @@ class OsmcSymbol(RefShieldMaker):
             handler(part.strip())
 
     def dimensions(self):
-        w = self.config.image_width
-        h = self.config.image_height
+        w = self.config.image_width or 16
+        h = self.config.image_height or 16
 
         if self.ref:
             tw, _ = self._get_text_size(self.config.text_font)
             text_border = self.config.text_border_width or 1.5
             image_border = self.config.image_border_width or 2.5
             w = max(w, int(tw + 2 * text_border + 2 * image_border))
-            h += int(self.config.image_border_width)
+            h += int(self.config.image_border_width or 0)
 
         return w, h
 
     def uuid(self):
-        parts = ['osmc', self.config.style or '', self.bgcolor or 'empty']
+        parts = ['osmc', self.config.style or 'None', self.bgcolor or 'empty']
         for part in (self.bgsymbol, self.fgsymbol, self.fgcolor, self.fgsecondary):
             if part is not None:
                 parts.append(part)
@@ -86,6 +86,12 @@ class OsmcSymbol(RefShieldMaker):
             # smaller, so that it fits
             ctx.translate(0.2,0.2)
             ctx.scale(0.6,0.6)
+
+        # secondary stripe fill
+        if self.fgsecondary is not None:
+            ctx.set_source_rgb(*self.config.osmc_colors[self.fgsecondary])
+            ctx.set_line_width(0.3)
+            self.paint_fg_right(ctx)
 
         # foreground fill
         if self.fgsymbol is not None:
@@ -131,7 +137,7 @@ class OsmcSymbol(RefShieldMaker):
     def _init_ref(self, ref):
         # XXX hack warning, limited support of second foreground on request
         # of Isreali mappers
-        if self.fgsymbol == 'blue_stripe' \
+        if self.fgcolor == 'blue' and self.fgsymbol == 'stripe' \
            and ref in ('orange_stripe_right', 'green_stripe_right'):
             self.fgsecondary = ref[:ref.index('_')]
         elif len(ref) <= 4:
@@ -382,7 +388,7 @@ class OsmcSymbol(RefShieldMaker):
         svg = Rsvg.Handle.new_from_data(content)
 
         w, h = self.dimensions()
-        b = self.config.image_border_width
+        b = self.config.image_border_width or 0
         bw, bh = b/w, b/h
 
         ctx.save()
@@ -393,6 +399,9 @@ class OsmcSymbol(RefShieldMaker):
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
+    if config.osmc_colors is None:
+        return None
+
     symbol = tags.get('osmc:symbol')
     if symbol is None or ':' not in symbol:
         return None

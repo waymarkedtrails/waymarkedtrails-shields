@@ -23,23 +23,26 @@ class CaiHikingSymbol(RefShieldMaker):
         tw, _ = self._get_text_size(self.config.text_font)
 
         # create an image where the text fits
-        w = int(tw + 2 * self.config.cai_border_width)
-        h = int(self.config.image_height + 0.5 * self.config.cai_border_width)
+        bw = self.config.cai_border_width or 5
+        w = int(tw + 2 * bw)
+        h = int((self.config.image_height or 16) + 0.5 * bw)
         w = max(h, w)
 
         return w, h
 
     def render(self, ctx, w, h):
-        self.render_background(ctx, w, h, self.config.color_names['white'])
+        bgcolor = (self.config.color_names or {}).get('white', (0, 0, 0))
+        self.render_background(ctx, w, h, bgcolor)
 
         # bars
-        ctx.set_source_rgb(*self.config.osmc_colors['red'])
+        fgcolor = (self.config.osmc_colors or {}).get('red', (1.0, 0, 0))
+        ctx.set_source_rgb(*fgcolor)
         ctx.rectangle(0, 0, w, h)
-        ctx.set_line_width(self.config.image_border_width)
+        ctx.set_line_width(self.config.image_border_width or 0)
         ctx.stroke()
 
         ctx.set_line_width(0)
-        bwidth = self.config.cai_border_width
+        bwidth = self.config.cai_border_width or 5
         if self.typ == 'stripe':
             ctx.rectangle(0, 0, bwidth, h)
             ctx.fill()

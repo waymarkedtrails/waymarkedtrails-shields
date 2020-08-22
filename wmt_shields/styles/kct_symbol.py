@@ -27,8 +27,8 @@ class KctSymbol(ShieldMaker):
 
     def dimensions(self):
         bwidth = self.config.image_border_width or 0
-        return ((self.config.image_width or 16) + 0.5 * bwidth,
-                (self.config.image_height or 16) + 0.5 * bwidth)
+        return (int((self.config.image_width or 16) + 0.5 * bwidth),
+                int((self.config.image_height or 16) + 0.5 * bwidth))
 
     def render(self, ctx, w, h):
         # get the template file
@@ -46,6 +46,9 @@ class KctSymbol(ShieldMaker):
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
+    if config.kct_colors is None or config.kct_types is None:
+        return None
+
     # slovakian system
     if tags.get('operator', '').lower() == 'kst':
         col = tags.get('colour')

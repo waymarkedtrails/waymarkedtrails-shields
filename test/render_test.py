@@ -125,6 +125,7 @@ if __name__ == "__main__":
         ('LOC', 'it', { 'osmc:symbol' : 'red:red:white_stripe:26:black'}),
         ('LOC', 'it', { 'osmc:symbol' : 'red:red:white_stripe:26s:black'}),
         ('REG', 'it', { 'osmc:symbol' : 'red:red:white_stripe:AVG:black'}),
+        ('REG', 'it', { 'osmc:symbol' : 'white:black:blue_stripe:orange_stripe_right'}),
         ('LOC', '', { 'jel' : 'p+', 'ref' : 'xx'}),
         ('LOC', '', { 'jel' : 'foo', 'ref' : 'yy'}),
         ('LOC', '', { 'kct_red' : 'major'}),

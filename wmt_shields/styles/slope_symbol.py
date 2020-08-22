@@ -19,6 +19,15 @@ class SlopeSymbol(RefShieldMaker):
         self.ref = ref
         self.uuid_pattern = f'slope_{{}}_{self.ref_uuid()}'
 
+    def uuid(self):
+        if self.ref:
+            return 'slope_{}_{}_{}'.format(
+                      self.config.style or 'None', self.config.difficulty,
+                      self.ref_uuid())
+
+        return 'slope_{}_{}'.format(
+                  self.config.style or 'None', self.config.difficulty)
+
     def render(self, ctx, w, h):
         # background fill
         ctx.arc(w/2, h/2, w/2, 0, 2*pi)
@@ -38,7 +47,8 @@ class SlopeSymbol(RefShieldMaker):
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
-    if config.style is None or tags.get('piste:type') != 'downhill':
+    if config.difficulty is None or config.slope_colors is None or \
+       tags.get('piste:type') != 'downhill':
         return None
 
     ref = tags.make_ref(maxlen=3, refs=('piste:ref',), names=('piste:name')) \

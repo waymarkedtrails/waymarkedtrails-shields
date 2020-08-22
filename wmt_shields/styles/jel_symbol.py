@@ -10,6 +10,9 @@ from ..common.config import ShieldConfig
 from .image_symbol import ImageSymbol
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
+    if config.jel_types is None:
+        return None
+
     ref = tags.get('jel')
     if ref is None or ref not in config.jel_types:
         return None

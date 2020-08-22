@@ -45,7 +45,7 @@ class ShieldMaker(object):
         """ Return a unique identifier also usable as a filename. the default
             implementation expects a field `uuid_pattern` which needs to have
             one `{}` placeholder for the style name. If that is not sufficient
-            then implentations may also just overwrite this function.
+            then implementations may also just overwrite this function.
         """
         return self.uuid_pattern.format(self.config.style or 'None')
 
