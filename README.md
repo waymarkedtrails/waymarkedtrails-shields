@@ -18,7 +18,7 @@ Installation
 
 Simply install with setup tools:
 
-    ./setup.py install
+    pip install .
 
 Usage
 -----

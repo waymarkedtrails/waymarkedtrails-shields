@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
 # This file is part of the Waymarkedtrails Project
-# Copyright (C) 2020 Sarah Hoffmann
+# Copyright (C) 2021 Sarah Hoffmann
 
 from setuptools import setup
 
