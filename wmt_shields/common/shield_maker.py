@@ -58,6 +58,8 @@ class ShieldMaker(object):
         return (self.config.image_width or 16, self.config.image_height or 16)
 
     def find_resource(self, subdir, filename):
+        subdir = str(subdir)
+        filename = str(filename)
         if os.path.isabs(filename):
             abspath = filename
         elif subdir is not None \
