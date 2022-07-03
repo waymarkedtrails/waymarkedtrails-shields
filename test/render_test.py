@@ -155,6 +155,21 @@ if __name__ == "__main__":
         ('downhill', '', { 'piste:type' : 'nordic', 'colour' : '#0000FF'}),
         ('novice', '', { 'piste:type' : 'downhill', 'piste:difficulty' : 'novice'}),
         ('novice', '', { 'piste:type' : 'downhill', 'piste:ref' : 'XX'}),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_crest' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_upper' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_left' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_arrow' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_left_arrow' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_bowl' }),  
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_upper_bowl' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_left_pointer' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_corner_left' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_diamond_left' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_diamond_right' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_house' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_L' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_drop' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_drop_line' }),
     ]
 
     for level, region, tags in testsymbols:
