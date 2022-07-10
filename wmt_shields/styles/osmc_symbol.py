@@ -190,6 +190,13 @@ class OsmcSymbol(RefShieldMaker):
         ctx.close_path()
         ctx.fill()
 
+    def paint_fg_corner_left(self, ctx):
+        ctx.move_to(1, 0)
+        ctx.line_to(0, 1)
+        ctx.line_to(0, 0)
+        ctx.close_path()
+        ctx.fill()
+        
     def paint_fg_cross(self, ctx):
         ctx.move_to(0, 0.5)
         ctx.line_to(1, 0.5)
@@ -213,7 +220,19 @@ class OsmcSymbol(RefShieldMaker):
         ctx.line_to(1, 0.5)
         ctx.line_to(0.5, 0.75)
         ctx.fill()
-
+        
+    def paint_fg_diamond_left(self, ctx):
+        ctx.move_to(0, 0.5)
+        ctx.line_to(0.5, 0.25)
+        ctx.line_to(0.5, 0.75)
+        ctx.fill()
+        
+    def paint_fg_diamond_right(self, ctx):
+        ctx.line_to(0.5, 0.25)
+        ctx.line_to(1, 0.5)
+        ctx.line_to(0.5, 0.75)
+        ctx.fill()
+        
     def paint_fg_dot(self, ctx):
         ctx.arc(0.5, 0.5, 0.29, 0, 2*pi)
         ctx.fill()
@@ -231,9 +250,17 @@ class OsmcSymbol(RefShieldMaker):
     def paint_fg_lower(self, ctx):
         ctx.rectangle(0, 0.5, 1, 0.5)
         ctx.fill()
+        
+    def paint_fg_upper(self, ctx):
+        ctx.rectangle(0, 0, 1, 0.5)
+        ctx.fill()
 
     def paint_fg_right(self, ctx):
         ctx.rectangle(0.5, 0, 0.5, 1)
+        ctx.fill()
+        
+    def paint_fg_left(self, ctx):
+        ctx.rectangle(0, 0, 0.5, 1)
         ctx.fill()
 
     def paint_fg_pointer(self, ctx):
@@ -242,6 +269,18 @@ class OsmcSymbol(RefShieldMaker):
         ctx.line_to(0.9, 0.5)
         ctx.fill()
 
+    def paint_fg_right_pointer(self, ctx):
+        ctx.move_to(0.1, 0.1)
+        ctx.line_to(0.1, 0.9)
+        ctx.line_to(0.9, 0.5)
+        ctx.fill()
+        
+    def paint_fg_left_pointer(self, ctx):
+        ctx.move_to(0.9, 0.1)
+        ctx.line_to(0.9, 0.9)
+        ctx.line_to(0.1, 0.5)
+        ctx.fill()
+        
     def paint_fg_rectangle_line(self, ctx):
         ctx.set_line_width(0.15)
         ctx.rectangle(0.25, 0.25, 0.5, 0.5)
@@ -377,7 +416,92 @@ class OsmcSymbol(RefShieldMaker):
     def paint_fg_wheel(self, ctx):
         ctx.save()
         self._src_from_svg(ctx, 'wheel.svg')
+        
+    def paint_fg_crest(self, ctx):
+        ctx.move_to(0.15,0.5)
+        ctx.line_to(0.15,0.05)
+        ctx.line_to(0.85,0.05)
+        ctx.line_to(0.85,0.5)
+        ctx.curve_to(0.85,0.728,0.701,0.921,0.50,0.95)
+        ctx.curve_to(0.299,0.921,0.148,0.728,0.15,0.50)
+        ctx.fill()
 
+    def paint_fg_arrow(self, ctx):
+        ctx.move_to(0.1,0.7)
+        ctx.line_to(0.55,0.7)
+        ctx.line_to(0.55, 0.95)
+        ctx.line_to(0.95, 0.5) 
+        ctx.line_to(0.55, 0.05)
+        ctx.line_to(0.55, 0.3) 
+        ctx.line_to(0.1, 0.3) 
+        ctx.line_to(0.1, 0.7)
+        ctx.fill()
+
+    def paint_fg_right_arrow(self, ctx):
+        ctx.move_to(0.1,0.7)
+        ctx.line_to(0.55,0.7)
+        ctx.line_to(0.55, 0.95)
+        ctx.line_to(0.95, 0.5) 
+        ctx.line_to(0.55, 0.05)
+        ctx.line_to(0.55, 0.3) 
+        ctx.line_to(0.1, 0.3) 
+        ctx.line_to(0.1, 0.7)
+        ctx.fill()
+
+    def paint_fg_left_arrow(self, ctx):
+        ctx.move_to(0.9,0.7)
+        ctx.line_to(0.45,0.7)
+        ctx.line_to(0.45, 0.95)
+        ctx.line_to(0.05, 0.5) 
+        ctx.line_to(0.45, 0.05)
+        ctx.line_to(0.45, 0.3) 
+        ctx.line_to(0.9, 0.3) 
+        ctx.line_to(0.9, 0.7)
+        ctx.fill()
+
+    def paint_fg_bowl(self, ctx):
+        ctx.move_to(0.05,0.5)
+        ctx.line_to(0.95,0.5)
+        ctx.arc(0.5,0.5,0.45,0,pi)
+        ctx.fill()
+
+    def paint_fg_upper_bowl(self, ctx):
+        ctx.move_to(0.05,0.5)
+        ctx.line_to(0.95,0.5)
+        ctx.arc_negative(0.5,0.5,0.45,0,pi)
+        ctx.fill()
+
+    def paint_fg_house(self, ctx):
+        ctx.move_to(0.2,0.9)
+        ctx.line_to(0.2,0.4)
+        ctx.line_to(0.5,0.1)
+        ctx.line_to(0.8,0.4)
+        ctx.line_to(0.8,0.9)
+        ctx.line_to(0.2,0.9)
+        ctx.fill()
+
+    def paint_fg_L(self, ctx):
+        ctx.set_line_width(0.3)
+        ctx.move_to(0.2,0.05)
+        ctx.line_to(0.2,0.8)
+        ctx.line_to(0.95,0.8)
+        ctx.stroke()
+
+    def paint_fg_drop(self, ctx):
+        ctx.move_to(0.5,0.2)
+        ctx.line_to(0.9,0.5)
+        ctx.line_to(0.5,0.8)
+        ctx.arc(0.4,0.5,0.3,0.98,-0.98)
+        ctx.fill()
+
+    def paint_fg_drop_line(self, ctx):
+        ctx.set_line_width(0.1)
+        ctx.move_to(0.5,0.21)
+        ctx.line_to(0.9,0.5)
+        ctx.line_to(0.5,0.79)
+        ctx.arc(0.4,0.5,0.3,0.98,-0.98)
+        ctx.stroke()
+        
     def _src_from_svg(self, ctx, name):
         content = self.find_resource(self.config.osmc_path, name)
         if self.fgcolor is not None:
