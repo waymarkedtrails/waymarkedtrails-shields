@@ -81,7 +81,7 @@ class Tags(object):
         if len(name) <= maxlen:
             return name
 
-        ref = re.sub('[^A-Z0-9]+', '', name)[:maxlen]
+        ref = ''.join(filter(lambda c: c.isdigit() or c.isupper(), name))[:maxlen]
         if len(ref) < 2:
             ref = re.sub(' ', '', name)[:maxlen]
 

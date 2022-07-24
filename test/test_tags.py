@@ -58,6 +58,7 @@ class TestTags(unittest.TestCase):
         self.assertEqual('Abc', Tags({'name': 'Abcde'}).make_ref(maxlen=3))
         self.assertEqual('AC', Tags({'name': 'Axx bxx Cxx'}).make_ref())
         self.assertEqual('AAA', Tags({'name': 'Ax Ay Az Bf'}).make_ref(maxlen=3))
+        self.assertEqual('CÉ', Tags({'name': 'Chemin des Écoliers'}).make_ref(maxlen=3))
 
         self.assertEqual('X1', Tags({'name:de': 'Xanten 1', 'name': 'unknown'})
                                  .make_ref(names=('name:de', 'name')))
