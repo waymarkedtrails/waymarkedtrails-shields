@@ -159,6 +159,8 @@ if __name__ == "__main__":
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_upper' }),
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_left' }),
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_arrow' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_up_arrow' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_down_arrow' }),
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_left_arrow' }),
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_bowl' }),  
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_upper_bowl' }),

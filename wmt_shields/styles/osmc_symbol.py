@@ -459,6 +459,28 @@ class OsmcSymbol(RefShieldMaker):
         ctx.line_to(0.9, 0.7)
         ctx.fill()
 
+    def paint_fg_up_arrow(self, ctx):
+        ctx.move_to(0.7,0.9)
+        ctx.line_to(0.7,0.45)
+        ctx.line_to(0.95, 0.45)
+        ctx.line_to(0.5, 0.05) 
+        ctx.line_to(0.05, 0.45)
+        ctx.line_to(0.3, 0.45) 
+        ctx.line_to(0.3, 0.9) 
+        ctx.line_to(0.7, 0.9)
+        ctx.fill()
+
+    def paint_fg_down_arrow(self, ctx):
+        ctx.move_to(0.7,0.1)
+        ctx.line_to(0.7,0.55)
+        ctx.line_to(0.95, 0.55)
+        ctx.line_to(0.5, 0.95) 
+        ctx.line_to(0.05, 0.55)
+        ctx.line_to(0.3, 0.55) 
+        ctx.line_to(0.3, 0.1) 
+        ctx.line_to(0.7, 0.1)
+        ctx.fill()
+
     def paint_fg_bowl(self, ctx):
         ctx.move_to(0.05,0.5)
         ctx.line_to(0.95,0.5)
