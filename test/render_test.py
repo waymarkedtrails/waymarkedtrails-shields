@@ -126,12 +126,15 @@ if __name__ == "__main__":
         ('LOC', 'it', { 'osmc:symbol' : 'red:red:white_stripe:26s:black'}),
         ('REG', 'it', { 'osmc:symbol' : 'red:red:white_stripe:AVG:black'}),
         ('REG', 'it', { 'osmc:symbol' : 'white:black:blue_stripe:orange_stripe_right'}),
-        ('LOC', '', { 'jel' : 'p+', 'ref' : 'xx'}),
         ('LOC', '', { 'jel' : 'foo', 'ref' : 'yy'}),
         ('LOC', '', { 'kct_red' : 'major'}),
         ('LOC', '', { 'kct_green' : 'interesting_object'}),
         ('LOC', '', { 'kct_yellow' : 'ruin'}),
         ('LOC', '', { 'kct_blue' : 'spring'}),
+        ('LOC', '', { 'kct_blue' : 'horse'}),
+        ('LOC', '', { 'kct_blue' : 'learning'}),
+        ('LOC', '', { 'kct_blue' : 'peak'}),
+        ('LOC', '', { 'kct_blue' : 'local'}),
         ('LOC', '', { 'operator' : 'Norwich City Council', 'color' : '#FF0000'}),
         ('LOC', '', { 'operator' : 'Norwich City Council', 'colour' : '#0000FF'}),
         ('LOC', '', { 'ref' : '123', 'colour' : 'yellow'}),
@@ -173,6 +176,21 @@ if __name__ == "__main__":
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_drop' }),
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_drop_line' }),
     ]
+
+    JEL = ['3', 'but', 'fbor', 'fkor', 'fq', 'fx', 'katlv', 'kivv', 'kor',
+           'kt', 'lb', 'llo', 'lq', 'lx', '4', 'c', 'fb', 'flo', 'f+', 'ii',
+           'kbor', 'kkor', 'kpec', 'kx', 'lc', 'll', 'ls', 'mberc', 'atl',
+           'eml', 'fc', 'fl', 'f', 'ivv', 'kb', 'klo', 'kq', 'l3', 'leml',
+           'lm', 'l+', 'm', 'atlv', 'f3', 'feml', 'fm', 'ftfl', 'k3', 'kc',
+           'kl', 'k+', 'l4', 'lfut', 'lmtb', 'l', 'mtb', 'bfk', 'f4', 'ffut',
+           'fmtb', 'ftmp', 'k4', 'keml', 'km', 'k', 'latl', 'lii', 'lnw',
+           'ltfl', 'nw', 'bor', 'fatl', 'fii', 'fnw', 'ft', 'karsztb', 'kfut',
+           'kmtb', 'ktfl', 'latlv', 'livv', 'lo', 'ltmp', 'p3', 'b', 'fatlv',
+           'fivv', 'fpec', 'fut', 'katl', 'kii', 'knw', 'ktmp', 'lbor',
+           'lkor', 'lpec', 'lt', 'p4']
+
+    for symbol in JEL:
+        testsymbols.append(('LOC', '', { 'jel' : symbol, 'ref' : 'yy'}))
 
     for level, region, tags in testsymbols:
         sym = factory.create(tags, region, style=level)
