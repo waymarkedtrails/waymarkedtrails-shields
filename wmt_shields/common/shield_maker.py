@@ -9,6 +9,8 @@ import os
 from io import BytesIO
 from xml.dom.minidom import parseString as xml_parse
 from xml.parsers.expat import ExpatError
+from urllib.parse import urlparse
+from urllib.request import urlopen
 
 import cairo
 import gi
@@ -60,7 +62,11 @@ class ShieldMaker(object):
     def find_resource(self, subdir, filename):
         subdir_str = str(subdir) if subdir is not None else ''
         filename = str(filename)
-        if os.path.isabs(filename):
+        if(urlparse(filename).netloc):
+            with urlopen(filename) as response:
+                return response.read()
+
+        elif os.path.isabs(filename):
             abspath = filename
         elif subdir is not None \
            and (os.path.isabs(subdir_str) or subdir_str.startswith('{data}')):
