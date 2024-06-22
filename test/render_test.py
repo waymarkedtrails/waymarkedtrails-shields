@@ -58,6 +58,8 @@ if __name__ == "__main__":
         ('REG', '', { 'ref' : u'يلة' }),
         ('REG', '', { 'ref' : u'하이' }),
         ('REG', '', { 'ref' : u'шие' }),
+        ('REG', '', { 'ref' : u'NeyY🟡' }),
+        ('REG', '', { 'ref' : u'[⛓' }),
         ('NAT', '', { 'ref' : '7', 'operator' : 'swiss mobility', 'network' : 'nwn'}),
         ('REG', '', { 'ref' : '57', 'operator' : 'swiss mobility', 'network' : 'rwn'}),
         ('REG', '', { 'operator' : 'kst', 'symbol' : 'learning', 'colour' : 'red'}),

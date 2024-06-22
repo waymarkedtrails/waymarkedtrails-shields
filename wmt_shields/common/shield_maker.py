@@ -113,7 +113,10 @@ class ShieldMaker(object):
         buf = image.getvalue()
 
         if format == 'svg':
-            buf = self._mangle_svg(buf.decode('UTF8')).encode('UTF8')
+            try:
+                buf = self._mangle_svg(buf.decode('UTF8')).encode('UTF8')
+            except Exception as ex:
+                print(f"WARNING: cannot mangle image {self.uuid()}: {ex}")
 
         return buf
 
@@ -147,6 +150,7 @@ class ShieldMaker(object):
 
         for svg in dom.getElementsByTagName("svg"):
             sym_ele = svg.getElementsByTagName("symbol")
+            image_ele = svg.getElementsByTagName("image")
             use_ele = svg.getElementsByTagName("use")
 
             if sym_ele.length == 0 or use_ele.length == 0:
@@ -157,43 +161,51 @@ class ShieldMaker(object):
                 symbols['#' + e.getAttribute('id')] = e.cloneNode(True)
                 e.parentNode.removeChild(e)
 
+            # image elements are not supported by Mapnik. Remove.
+            for e in image_ele:
+                e.parentNode.removeChild(e)
+
             for e in use_ele:
                 ref = e.getAttribute('xlink:href')
-                x   = float(e.getAttribute('x'))
-                y   = float(e.getAttribute('y'))
 
-                group = dom.createElement('g')
+                if ref in symbols and e.hasAttribute('x') and e.hasAttribute('y'):
+                    x   = float(e.getAttribute('x'))
+                    y   = float(e.getAttribute('y'))
 
-                for ce in symbols[ref].childNodes:
-                    node = ce.cloneNode(True)
+                    group = dom.createElement('g')
 
-                    if node.nodeName == 'path':
-                        path = node.getAttribute('d')
+                    for ce in symbols[ref].childNodes:
+                        node = ce.cloneNode(True)
 
-                        newpath = ''
-                        is_x = True
-                        for p in path.split():
-                            if not p:
-                                continue
+                        if node.nodeName == 'path':
+                            path = node.getAttribute('d')
 
-                            if p[0].isupper():
-                                dx = x
-                                dy = y
-                                newpath += p + ' '
-                            elif p[0].islower():
-                                dx = 0
-                                dy = 0
-                                newpath += p + ' '
-                            elif p[0].isnumeric:
-                                val = float(p) + (dx if is_x else dy)
-                                is_x = not is_x
-                                newpath += "%f " % val
+                            newpath = ''
+                            is_x = True
+                            for p in path.split():
+                                if not p:
+                                    continue
 
-                        node.setAttribute('d', newpath)
+                                if p[0].isupper():
+                                    dx = x
+                                    dy = y
+                                    newpath += p + ' '
+                                elif p[0].islower():
+                                    dx = 0
+                                    dy = 0
+                                    newpath += p + ' '
+                                elif p[0].isnumeric:
+                                    val = float(p) + (dx if is_x else dy)
+                                    is_x = not is_x
+                                    newpath += "%f " % val
 
-                    group.appendChild(node)
+                            node.setAttribute('d', newpath)
 
-                e.parentNode.replaceChild(group, e)
+                        group.appendChild(node)
+
+                    e.parentNode.replaceChild(group, e)
+                else:
+                    e.parentNode.removeChild(e)
 
         return dom.toxml()
 
