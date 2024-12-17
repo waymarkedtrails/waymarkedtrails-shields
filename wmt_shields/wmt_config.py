@@ -25,6 +25,7 @@ class WmtConfig(object):
                               'wanderland schweiz', 
                               'schweiz mobil',
                               'skatingland schweiz',
+                              'la suisse à pied,
                               'veloland schweiz',
                               'mountainbikeland schweiz',
                               'schweizmobil',
