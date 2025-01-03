@@ -177,6 +177,8 @@ if __name__ == "__main__":
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_L' }),
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_drop' }),
         ('LOC', '', { 'osmc:symbol' : 'red:white:green_drop_line' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_left_pointer_line' }),
+        ('LOC', '', { 'osmc:symbol' : 'red:white:green_pointer_line' }),
     ]
 
     JEL = ['3', 'but', 'fbor', 'fkor', 'fq', 'fx', 'katlv', 'kivv', 'kor',

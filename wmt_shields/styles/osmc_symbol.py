@@ -280,7 +280,31 @@ class OsmcSymbol(RefShieldMaker):
         ctx.line_to(0.9, 0.9)
         ctx.line_to(0.1, 0.5)
         ctx.fill()
-        
+
+    def paint_fg_pointer_line(self, ctx):
+        ctx.set_line_width(0.15)
+        ctx.move_to(0.1, 0.1)
+        ctx.line_to(0.1, 0.9)
+        ctx.line_to(0.9, 0.5)
+        ctx.line_to(0.1, 0.1)
+        ctx.stroke()
+
+    def paint_fg_right_pointer_line(self, ctx):
+        ctx.set_line_width(0.15)
+        ctx.move_to(0.1, 0.1)
+        ctx.line_to(0.1, 0.9)
+        ctx.line_to(0.9, 0.5)
+        ctx.line_to(0.1, 0.1)
+        ctx.stroke()
+
+    def paint_fg_left_pointer_line(self, ctx):
+        ctx.set_line_width(0.15)
+        ctx.move_to(0.9, 0.1)
+        ctx.line_to(0.9, 0.9)
+        ctx.line_to(0.1, 0.5)
+        ctx.line_to(0.9, 0.1)
+        ctx.stroke()
+
     def paint_fg_rectangle_line(self, ctx):
         ctx.set_line_width(0.15)
         ctx.rectangle(0.25, 0.25, 0.5, 0.5)
