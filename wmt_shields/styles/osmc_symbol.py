@@ -26,7 +26,6 @@ class TransparentBackground:
         ctx.rectangle(0, 0, 1, 1)
         ctx.fill()
 
-
 class BackgroundImage:
     """ Helper class for creating the background of an OSMC symbol.
     """
@@ -502,17 +501,29 @@ class OsmcSymbol(RefShieldMaker):
         self.ref = ''
         self.bg: BackgroundImage | TransparentBackground = TransparentBackground
         self.fgs: list[ForegourndImage] = []
-        self.fgcolor = None
         self.textcolor = 'black'
 
-        part_handlers = (self._init_way_color,
-                         self._init_bg_symbol,
-                         self._add_fg_symbol,
-                         self._init_ref,
-                         self._init_text_color)
+        if symbol is not None:
+            parts = symbol.split(':', 5)
+            num_parts = len(parts)
 
-        for part, handler in zip(symbol.split(':', 4), part_handlers):
-            handler(part.strip())
+            self._init_way_color(parts[0].strip())
+            if num_parts > 1:
+                self._init_bg_symbol(parts[1].strip())
+            if num_parts > 2:
+                self._add_fg_symbol(parts[2].strip())
+            match num_parts:
+                case 4:
+                    if not self._add_fg_symbol(parts[3].strip()):
+                        self._init_ref(parts[3].strip(), 'black')
+                case 5:
+                    self._init_ref(parts[3].strip(), parts[4].strip())
+                case 6:
+                    self._add_fg_symbol(parts[3].strip())
+                    self._init_ref(parts[4].strip(), parts[5].strip())
+
+    def is_empty(self) -> bool:
+        return not self.ref and not self.fgs and self.bg == TransparentBackground
 
     def dimensions(self):
         w = self.config.image_width or 16
@@ -584,35 +595,39 @@ class OsmcSymbol(RefShieldMaker):
             self.bg = BackgroundImage(parts[0],
                                       parts[1] if len(parts) > 1 else None)
 
-    def _add_fg_symbol(self, symbol):
+    def _add_fg_symbol(self, symbol) -> bool:
         if SvgImage.has_symbol(symbol):
             self.fgs.append(SvgImage(None, symbol))
+            return True
+
         if symbol != "red_diamond" and ForegroundImage.has_symbol(symbol):
             self.fgs.append(ForegroundImage(None, symbol))
-        else:
-            parts = symbol.split('_', 1)
-            if len(parts) > 1:
-                color = parts[0] if parts[0] in self.config.osmc_colors else 'black'
-                if ForegroundImage.has_symbol(parts[1]):
-                    self.fgs.append(ForegroundImage(color, parts[1]))
-                elif SvgImage.has_symbol(parts[1]):
-                    self.fgs.append(SvgImage(color, parts[1]))
+            return True
 
-    def _init_ref(self, ref):
-        if len(ref) <= 4:
+        parts = symbol.split('_', 1)
+        if len(parts) > 1:
+            color = parts[0] if parts[0] in self.config.osmc_colors else 'black'
+            if ForegroundImage.has_symbol(parts[1]):
+                self.fgs.append(ForegroundImage(color, parts[1]))
+                return True
+            if SvgImage.has_symbol(parts[1]):
+                self.fgs.append(SvgImage(color, parts[1]))
+                return True
+
+        return False
+
+    def _init_ref(self, ref, color):
+        if ref and len(ref) <= 4:
             self.ref = ref
 
-    def _init_text_color(self, color):
-        if color in self.config.osmc_colors:
-            self.textcolor = color
+            if color in self.config.osmc_colors:
+                self.textcolor = color
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):
     if config.osmc_colors is None:
         return None
 
-    symbol = tags.get('osmc:symbol')
-    if symbol is None or ':' not in symbol:
-        return None
+    symbol = OsmcSymbol(tags.get('osmc:symbol'), config)
 
-    return OsmcSymbol(symbol, config)
+    return None if symbol.is_empty() else symbol
