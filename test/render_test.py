@@ -1,8 +1,7 @@
-# -*- coding: utf-8
 # SPDX-License-Identifier: GPL-3.0-only
 #
 # This file is part of the Waymarked Trails Map Project
-# Copyright (C) 2011-2020 Sarah Hoffmann
+# Copyright (C) 2011-2025 Sarah Hoffmann
 
 """
 Renders various shields for testing
@@ -196,10 +195,23 @@ if __name__ == "__main__":
     for symbol in JEL:
         testsymbols.append(('LOC', '', { 'jel' : symbol, 'ref' : 'yy'}))
 
-    for level, region, tags in testsymbols:
-        sym = factory.create(tags, region, style=level)
-        if sym is None:
-            print("Unknown tags:", tags)
-            continue
+    with open(os.path.join(outdir, 'index.html'), 'w') as fd:
+        fd.write("""
+            <html><body>
+              <table><tr><th>Symbol</th><th>Tags</th></tr>
+        """)
 
-        sym.to_file(os.path.join(outdir, sym.uuid() + '.svg'), format='svg')
+
+        for level, region, tags in testsymbols:
+            sym = factory.create(tags, region, style=level)
+            if sym is None:
+                print("Unknown tags:", tags)
+                continue
+
+            sym.to_file(os.path.join(outdir, sym.uuid() + '.svg'), format='svg')
+
+            fd.write(f'<tr><td><img src="{sym.uuid()}.svg" /></td><td><tt>{tags}</tt></td></tr>')
+
+
+
+        fd.write("</table></body></html>")
