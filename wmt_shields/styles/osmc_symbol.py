@@ -251,17 +251,6 @@ class ForegroundImage:
         ctx.rectangle(0.25, 0.25, 0.5, 0.5)
         ctx.fill()
 
-    def _paint_red_diamond(self, ctx):
-        ctx.move_to(0, 0.5)
-        ctx.line_to(0.5, 0.25)
-        ctx.line_to(0.5, 0.75)
-        ctx.fill()
-        ctx.set_source_rgb(*self._config.osmc_colors['red'])
-        ctx.move_to(0.5, 0.25)
-        ctx.line_to(1, 0.5)
-        ctx.line_to(0.5, 0.75)
-        ctx.fill()
-
     def _paint_slash(self, ctx):
         ctx.move_to(1, 0)
         ctx.line_to(0, 1)
@@ -600,13 +589,17 @@ class OsmcSymbol(RefShieldMaker):
             self.fgs.append(SvgImage(None, symbol))
             return True
 
-        if symbol != "red_diamond" and ForegroundImage.has_symbol(symbol):
+        if ForegroundImage.has_symbol(symbol):
             self.fgs.append(ForegroundImage(None, symbol))
             return True
 
         parts = symbol.split('_', 1)
         if len(parts) > 1:
             color = parts[0] if parts[0] in self.config.osmc_colors else 'black'
+            if parts[1] == 'red_diamond':
+                self.fgs.append(ForegroundImage(color, 'diamond'))
+                self.fgs.append(ForegroundImage('red', 'diamond_right'))
+                return True
             if ForegroundImage.has_symbol(parts[1]):
                 self.fgs.append(ForegroundImage(color, parts[1]))
                 return True
