@@ -72,7 +72,6 @@ class OsmcSymbol(RefShieldMaker):
         self.bg: BackgroundImage | None = None
         self.fgsymbol = None
         self.fgcolor = None
-        self.fgsecondary = None
         self.textcolor = 'black'
 
         part_handlers = (self._init_way_color,
@@ -100,7 +99,7 @@ class OsmcSymbol(RefShieldMaker):
     def uuid(self):
         parts = ['osmc', self.config.style or 'None',
                  self.bg.uuid() if self.bg else 'empty']
-        for part in (self.fgsymbol, self.fgcolor, self.fgsecondary):
+        for part in (self.fgsymbol, self.fgcolor):
             if part is not None:
                 parts.append(part)
         if self.ref:
@@ -120,12 +119,6 @@ class OsmcSymbol(RefShieldMaker):
             ctx.set_source_rgba(0, 0, 0, 0) # transparent
             ctx.rectangle(0, 0, 1, 1)
             ctx.fill()
-
-        # secondary stripe fill
-        if self.fgsecondary is not None:
-            ctx.set_source_rgb(*self.config.osmc_colors[self.fgsecondary])
-            ctx.set_line_width(0.3)
-            self.paint_fg_right(ctx)
 
         # foreground fill
         if self.fgsymbol is not None:
@@ -167,12 +160,7 @@ class OsmcSymbol(RefShieldMaker):
                 self.fgcolor = parts[0] if parts[0] in self.config.osmc_colors else 'black'
 
     def _init_ref(self, ref):
-        # XXX hack warning, limited support of second foreground on request
-        # of Isreali mappers
-        if self.fgcolor == 'blue' and self.fgsymbol == 'stripe' \
-           and ref in ('orange_stripe_right', 'green_stripe_right'):
-            self.fgsecondary = ref[:ref.index('_')]
-        elif len(ref) <= 4:
+        if len(ref) <= 4:
             self.ref = ref
 
     def _init_text_color(self, color):
