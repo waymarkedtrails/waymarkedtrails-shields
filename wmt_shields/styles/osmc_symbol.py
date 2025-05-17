@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 #
 # This file is part of the Waymarked Trails Map Project
-# Copyright (C) 2011-2020 Sarah Hoffmann
+# Copyright (C) 2011-2025 Sarah Hoffmann
 
 import re
 import os
@@ -14,6 +14,53 @@ from ..common.tags import Tags
 from ..common.config import ShieldConfig
 from ..common.shield_maker import RefShieldMaker
 
+class BackgroundImage:
+    """ Helper class for creating the background of an OSMC symbol.
+    """
+
+    def __init__(self, color: str, symbol: str | None) -> None:
+        self.color = color
+        self.symbol = symbol if symbol is None or hasattr(self, '_paint_' + symbol) else None
+
+    def uuid(self) -> str:
+        return f"{self.color}_{self.symbol}" if self.symbol else self.color
+
+    def paint(self, ctx, config):
+        """ Draw the background as described.
+            Will adjust the canvas for drawing of the inner part.
+        """
+        if self.symbol is None:
+            col = self.color
+        else:
+            col = 'black' if self.color == 'white' else 'white'
+
+        ctx.rectangle(0, 0, 1, 1)
+        ctx.set_source_rgb(*config.osmc_colors[col])
+        ctx.fill()
+
+        if self.symbol is not None:
+            ctx.set_source_rgb(*config.osmc_colors[self.color])
+            func = getattr(self, f'_paint_{self.symbol}')
+            func(ctx)
+            # with a background image, make the foreground image a bit
+            # smaller, so that it fits
+            ctx.translate(0.2,0.2)
+            ctx.scale(0.6,0.6)
+
+    def _paint_circle(self, ctx):
+        ctx.set_line_width(0.1)
+        ctx.arc(0.5, 0.5, 0.4, 0, 2*pi)
+        ctx.stroke()
+
+    def _paint_frame(self, ctx):
+        ctx.set_line_width(0.1)
+        ctx.rectangle(0.15, 0.15, 0.7, 0.7)
+        ctx.stroke()
+
+    def _paint_round(self, ctx):
+        ctx.arc(0.5, 0.5, 0.4, 0, 2*pi)
+        ctx.fill()
+
 
 class OsmcSymbol(RefShieldMaker):
     """ Shield that follows the osmc:symbol specification.
@@ -22,8 +69,7 @@ class OsmcSymbol(RefShieldMaker):
     def __init__(self, symbol, config):
         self.config = config
         self.ref = ''
-        self.bgsymbol = None
-        self.bgcolor = None
+        self.bg: BackgroundImage | None = None
         self.fgsymbol = None
         self.fgcolor = None
         self.fgsecondary = None
@@ -52,8 +98,9 @@ class OsmcSymbol(RefShieldMaker):
         return w, h
 
     def uuid(self):
-        parts = ['osmc', self.config.style or 'None', self.bgcolor or 'empty']
-        for part in (self.bgsymbol, self.fgsymbol, self.fgcolor, self.fgsecondary):
+        parts = ['osmc', self.config.style or 'None',
+                 self.bg.uuid() if self.bg else 'empty']
+        for part in (self.fgsymbol, self.fgcolor, self.fgsecondary):
             if part is not None:
                 parts.append(part)
         if self.ref:
@@ -67,25 +114,12 @@ class OsmcSymbol(RefShieldMaker):
         ctx.scale(w, h)
 
         # background
-        if self.bgcolor is not None:
-            if self.bgsymbol is None:
-                col = self.bgcolor
-            else:
-                col = 'black' if self.bgcolor == 'white' else 'white'
-            self.render_background(ctx, 1, 1, self.config.osmc_colors[col])
+        if self.bg:
+            self.bg.paint(ctx, self.config)
         else:
-            ctx.set_source_rgba(0,0,0,0) # transparent
+            ctx.set_source_rgba(0, 0, 0, 0) # transparent
             ctx.rectangle(0, 0, 1, 1)
             ctx.fill()
-
-        if self.bgsymbol is not None:
-            ctx.set_source_rgb(*self.config.osmc_colors[self.bgcolor])
-            func = getattr(self, f'paint_bg_{self.bgsymbol}')
-            func(ctx)
-            # with a background image, make the foreground image a bit
-            # smaller, so that it fits
-            ctx.translate(0.2,0.2)
-            ctx.scale(0.6,0.6)
 
         # secondary stripe fill
         if self.fgsecondary is not None:
@@ -119,10 +153,8 @@ class OsmcSymbol(RefShieldMaker):
         parts = symbol.split('_', 1)
 
         if parts[0] in self.config.osmc_colors:
-            self.bgcolor = parts[0]
-
-            if len(parts) > 1 and hasattr(self, 'paint_bg_' + parts[1]):
-                self.bgsymbol = parts[1]
+            self.bg = BackgroundImage(parts[0],
+                                      parts[1] if len(parts) > 1 else None)
 
     def _init_fg_symbol(self, symbol):
         if symbol != "red_diamond" and hasattr(self, 'paint_fg_' + symbol):
@@ -146,20 +178,6 @@ class OsmcSymbol(RefShieldMaker):
     def _init_text_color(self, color):
         if color in self.config.osmc_colors:
             self.textcolor = color
-
-    def paint_bg_circle(self, ctx):
-        ctx.set_line_width(0.1)
-        ctx.arc(0.5, 0.5, 0.4, 0, 2*pi)
-        ctx.stroke()
-
-    def paint_bg_frame(self, ctx):
-        ctx.set_line_width(0.1)
-        ctx.rectangle(0.15, 0.15, 0.7, 0.7)
-        ctx.stroke()
-
-    def paint_bg_round(self, ctx):
-        ctx.arc(0.5, 0.5, 0.4, 0, 2*pi)
-        ctx.fill()
 
     def paint_fg_arch(self, ctx):
         ctx.set_line_width(0.22)
