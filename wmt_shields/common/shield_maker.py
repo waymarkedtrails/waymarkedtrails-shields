@@ -50,7 +50,7 @@ class ShieldMaker(object):
         return self.uuid_pattern.format(self.config.style or 'None')
 
     def dimensions(self):
-        """ Return a tuple of width and height of the final image (including
+        """ Return a tuple of width and height of the final image (excluding
             borders). The default implementation returns `image_width` and
             `image_height` from the configurations. Implementations may
             override the function for custom sizes.
@@ -93,21 +93,21 @@ class ShieldMaker(object):
             `format`.
         """
         image = BytesIO()
-        w, h = self.dimensions()
 
         if format == 'svg':
-            surface = cairo.SVGSurface(image, w, h)
+            surface = cairo.SVGSurface(image, *self.dimensions())
             major, minor, patch = cairo.version_info
             if major == 1 and minor >= 18:
                 surface.set_document_unit(cairo.SVGUnit.PX)
         else:
-            raise RuntimeError("Format {} not implemented.".format(format))
+            raise RuntimeError(f"Format {format} not implemented.")
 
         ctx = cairo.Context(surface)
         ctx.save()
+        w, h = self.render_canvas(ctx)
         self.render(ctx, w, h)
         ctx.restore()
-        self._render_border(ctx, w, h)
+
         ctx.show_page()
         surface.finish()
         buf = image.getvalue()
@@ -120,19 +120,21 @@ class ShieldMaker(object):
 
         return buf
 
+    def render_canvas(self, ctx):
+        border = self.config.image_border_width or 0
+        w, h = self.dimensions()
 
-    def _render_border(self, ctx, w, h):
-        """ Create a border around the image if that was configured.
-        """
-        border_width = self.config.image_border_width or 0
-        color = self.config.border_color
-        if border_width <= 0 or color is None:
-            return
+        if border > 0 and self.config.border_color is not None:
+            # set background in border color
+            ctx.rectangle(0, 0, w, h)
+            ctx.set_source_rgb(*self.config.border_color)
+            ctx.fill()
+            ctx.translate(border, border)
+            ctx.rectangle(0, 0, w - 2 * border, h - 2 * border)
+            ctx.clip()
+            return w - 2 * border, h - 2 * border
 
-        ctx.rectangle(0, 0, w, h)
-        ctx.set_line_width(self.config.image_border_width)
-        ctx.set_source_rgb(*self.config.border_color)
-        ctx.stroke()
+        return w, h
 
     def render_background(self, ctx, w, h, color):
         if color is None:

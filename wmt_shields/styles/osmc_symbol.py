@@ -22,13 +22,14 @@ class TransparentBackground:
 
     @classmethod
     def paint(cls, ctx, _):
-        ctx.set_source_rgba(0, 0, 0, 0) # transparent
+        ctx.set_source_rgba(1, 1, 1) # white
         ctx.rectangle(0, 0, 1, 1)
         ctx.fill()
 
 class BackgroundImage:
     """ Helper class for creating the background of an OSMC symbol.
     """
+    FRAME_WIDTH = 0.1
 
     def __init__(self, color: str, symbol: str | None) -> None:
         self.color = color
@@ -53,25 +54,35 @@ class BackgroundImage:
         if self.symbol is not None:
             ctx.set_source_rgb(*config.osmc_colors[self.color])
             func = getattr(self, f'_paint_{self.symbol}')
-            func(ctx)
-            # with a background image, make the foreground image a bit
-            # smaller, so that it fits
-            ctx.translate(0.2,0.2)
-            ctx.scale(0.6,0.6)
+            func(ctx, config)
 
-    def _paint_circle(self, ctx):
-        ctx.set_line_width(0.1)
-        ctx.arc(0.5, 0.5, 0.4, 0, 2*pi)
+    def _paint_circle(self, ctx, config):
+        ctx.set_line_width(self.FRAME_WIDTH)
+        ctx.arc(0.5, 0.5, 0.5 - self.FRAME_WIDTH / 2, 0, 2 * pi)
+        ctx.stroke()
+        ctx.arc(0.5, 0.5, 0.5 - self.FRAME_WIDTH, 0, 2 * pi)
+        ctx.clip()
+        ctx.translate(self.FRAME_WIDTH/2, self.FRAME_WIDTH/2)
+        ctx.scale(1.0 - self.FRAME_WIDTH, 1.0 - self.FRAME_WIDTH)
+
+    def _paint_frame(self, ctx, config):
+        ctx.set_line_width(self.FRAME_WIDTH)
+        ctx.rectangle(self.FRAME_WIDTH/2, self.FRAME_WIDTH/2,
+                      1.0 - self.FRAME_WIDTH, 1.0 - self.FRAME_WIDTH)
         ctx.stroke()
 
-    def _paint_frame(self, ctx):
-        ctx.set_line_width(0.1)
-        ctx.rectangle(0.15, 0.15, 0.7, 0.7)
-        ctx.stroke()
+        ctx.rectangle(self.FRAME_WIDTH, self.FRAME_WIDTH,
+                      (1.0 - 2 * self.FRAME_WIDTH), (1.0 - 2 * self.FRAME_WIDTH))
+        ctx.clip()
+        ctx.translate(self.FRAME_WIDTH/2, self.FRAME_WIDTH/2)
+        ctx.scale(1.0 - self.FRAME_WIDTH, 1.0 - self.FRAME_WIDTH)
 
-    def _paint_round(self, ctx):
-        ctx.arc(0.5, 0.5, 0.4, 0, 2*pi)
-        ctx.fill()
+    def _paint_round(self, ctx, config):
+        ctx.arc(0.5, 0.5, 0.49, 0, 2*pi)
+        ctx.fill_preserve()
+        ctx.clip()
+        ctx.translate(0.01, 0.01)
+        ctx.scale(0.98, 0.98)
 
 
 class ForegroundImage:
@@ -220,26 +231,21 @@ class ForegroundImage:
 
     def _paint_pointer_line(self, ctx):
         ctx.set_line_width(0.15)
-        ctx.move_to(0.1, 0.1)
-        ctx.line_to(0.1, 0.9)
-        ctx.line_to(0.9, 0.5)
-        ctx.line_to(0.1, 0.1)
+        ctx.move_to(0.15, 0.15)
+        ctx.line_to(0.15, 0.85)
+        ctx.line_to(0.85, 0.5)
+        ctx.close_path()
         ctx.stroke()
 
     def _paint_right_pointer_line(self, ctx):
-        ctx.set_line_width(0.15)
-        ctx.move_to(0.1, 0.1)
-        ctx.line_to(0.1, 0.9)
-        ctx.line_to(0.9, 0.5)
-        ctx.line_to(0.1, 0.1)
-        ctx.stroke()
+        self._paint_pointer_line(ctx)
 
     def _paint_left_pointer_line(self, ctx):
         ctx.set_line_width(0.15)
-        ctx.move_to(0.9, 0.1)
-        ctx.line_to(0.9, 0.9)
-        ctx.line_to(0.1, 0.5)
-        ctx.line_to(0.9, 0.1)
+        ctx.move_to(0.85, 0.15)
+        ctx.line_to(0.85, 0.85)
+        ctx.line_to(0.15, 0.5)
+        ctx.close_path()
         ctx.stroke()
 
     def _paint_rectangle_line(self, ctx):
@@ -564,13 +570,9 @@ class OsmcSymbol(RefShieldMaker):
 
         svg = Rsvg.Handle.new_from_data(content)
 
-        w, h = self.dimensions()
-        b = self.config.image_border_width or 0
-        bw, bh = b/w, b/h
-
         ctx.save()
-        ctx.translate(bw, bh)
-        ctx.scale((1.0 - 2.0*bw)/svg.props.width, (1.0 - 2.0*bh)/svg.props.height)
+        ctx.translate(0.05, 0.05)
+        ctx.scale(0.9/svg.props.width, 0.9/svg.props.height)
         svg.render_cairo(ctx)
         ctx.restore()
 

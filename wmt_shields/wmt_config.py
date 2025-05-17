@@ -8,9 +8,9 @@ class WmtConfig(object):
     """
     data_dir = "{data}"
 
-    image_height = 15
-    image_width = 15
-    image_border_width = 2.5
+    image_height = 16
+    image_width = 16
+    image_border_width = 1.2
 
     text_border_width = 2.5
     text_bgcolor = (1, 1, 1) # white
