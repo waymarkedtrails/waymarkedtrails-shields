@@ -27,8 +27,8 @@ class RefColorSymbol(RefShieldMaker):
         h = int((self.config.image_height or 16) + image_border)
         return (w, h)
 
-    def render(self, ctx, w, h):
-        self.render_background(ctx, w, h, (1., 1., 1.))
+    def render(self, ctx):
+        w, h = self.render_background(ctx, (1., 1., 1.))
 
         image_border = self.config.image_border_width or 2.5
 

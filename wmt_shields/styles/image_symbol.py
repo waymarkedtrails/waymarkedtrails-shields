@@ -22,7 +22,8 @@ class ImageSymbol(ShieldMaker):
         self.path = path
         self.filename = filename
 
-    def render(self, ctx, w, h):
+    def render(self, ctx):
+        w, h = self.render_background(ctx, None)
         data = self.find_resource(self.path, self.filename)
         rhdl = Rsvg.Handle.new_from_data(data)
         dim = rhdl.get_dimensions()

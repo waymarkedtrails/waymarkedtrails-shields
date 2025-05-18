@@ -23,8 +23,8 @@ class RefSymbol(RefShieldMaker):
 
         return (w, self.config.image_height or 16)
 
-    def render(self, ctx, w, h):
-        self.render_background(ctx, w, h, self.config.text_bgcolor)
+    def render(self, ctx):
+        w, h = self.render_background(ctx, self.config.text_bgcolor)
 
         # reference text
         layout, tw, baseh = self.layout_ref(ctx, self.config.text_font)

@@ -16,8 +16,8 @@ class ColorBoxSymbol(ShieldMaker):
         self.color = color.rgb
         self.uuid_pattern = f'cbox_{{}}_{color.name}'
 
-    def render(self, ctx, w, h):
-        self.render_background(ctx, w, h, self.color)
+    def render(self, ctx):
+        self.render_background(ctx, self.color)
 
 
 def create_for(tags: Tags, region: str, config: ShieldConfig):

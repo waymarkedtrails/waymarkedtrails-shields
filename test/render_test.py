@@ -21,7 +21,7 @@ class GlobalConfig(WmtConfig):
                     **WmtConfig.style_config)
 
 
-OSMC_BACKGROUNDS = ('', '_circle', '_frame', '_round')
+OSMC_BACKGROUNDS = ('', '_circle', '_frame', '_round', '_diamond', '_diamond_line')
 OSMC_FOREGROUNDS = ("_arch", "_backslash", "_bar", "_circle", "_corner", "_corner_left", "_cross", "_diamond_line", "_diamond", "_diamond_left", "_diamond_right", "_dot", "_fork", "_lower", "_upper", "_right", "_left", "_pointer", "_right_pointer", "_left_pointer", "_pointer_line", "_right_pointer_line", "_left_pointer_line", "_rectangle_line", "_rectangle", "_slash", "_stripe", "_triangle_line", "_triangle", "_triangle_turned", "_turned_T", "_x", "_hexagon", "_shell", "_shell_modern", "_crest", "_arrow", "_right_arrow", "_left_arrow", "_up_arrow", "_down_arrow", "_bowl", "_upper_bowl", "_house", "_L", "_drop", "_drop_line")
 
 if __name__ == "__main__":
@@ -139,9 +139,11 @@ if __name__ == "__main__":
         for fg in OSMC_FOREGROUNDS:
             testsymbols.append(('LOC', '', { 'osmc:symbol' : f"red:red{bg}:green{fg}:A:black"}))
 
+#    testsymbols = [('LOC', '', {'osmc:symbol': 'red:red:green_diamond_left:A:black'})]
+
     with open(os.path.join(outdir, 'index.html'), 'w') as fd:
         fd.write("""
-            <html><body>
+            <html><body bgcolor="#eee">
               <table><tr><th>Symbol</th><th>Tags</th></tr>
         """)
 

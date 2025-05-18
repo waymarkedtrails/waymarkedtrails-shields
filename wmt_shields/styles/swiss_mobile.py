@@ -19,8 +19,8 @@ class SwissMobileSymbol(RefShieldMaker):
     def dimensions(self):
         return 8 + len(self.ref) * 7, self.config.image_height or 16
 
-    def render(self, ctx, w, h):
-        self.render_background(ctx, w, h, self.config.swiss_mobile_bgcolor)
+    def render(self, ctx):
+        w, h = self.render_background(ctx, self.config.swiss_mobile_bgcolor)
 
         layout, tw, baseh = self.layout_ref(ctx, self.config.swiss_mobile_font)
 

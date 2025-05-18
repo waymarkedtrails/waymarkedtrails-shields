@@ -30,9 +30,9 @@ class CaiHikingSymbol(RefShieldMaker):
 
         return w, h
 
-    def render(self, ctx, w, h):
+    def render(self, ctx):
         bgcolor = (self.config.color_names or {}).get('white', (0, 0, 0))
-        self.render_background(ctx, w, h, bgcolor)
+        w, h = self.render_background(ctx, bgcolor)
 
         # bars
         fgcolor = (self.config.osmc_colors or {}).get('red', (1.0, 0, 0))

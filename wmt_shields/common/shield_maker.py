@@ -104,9 +104,9 @@ class ShieldMaker(object):
 
         ctx = cairo.Context(surface)
         ctx.save()
-        w, h = self.render_canvas(ctx)
-        self.render(ctx, w, h)
+        self.render(ctx)
         ctx.restore()
+        self.render_frame(ctx)
 
         ctx.show_page()
         surface.finish()
@@ -120,29 +120,31 @@ class ShieldMaker(object):
 
         return buf
 
-    def render_canvas(self, ctx):
+    def render_frame(self, ctx):
+        border = self.config.image_border_width or 0
+
+        if border > 0 and self.config.border_color is not None:
+            w, h = self.dimensions()
+            # set background in border color
+            ctx.rectangle(border/2, border/2, w - border, h - border)
+            ctx.set_source_rgb(*self.config.border_color)
+            ctx.stroke()
+
+    def render_background(self, ctx, color):
         border = self.config.image_border_width or 0
         w, h = self.dimensions()
 
-        if border > 0 and self.config.border_color is not None:
-            # set background in border color
+        if color is not None:
             ctx.rectangle(0, 0, w, h)
-            ctx.set_source_rgb(*self.config.border_color)
+            ctx.set_source_rgb(*color)
             ctx.fill()
+
+        if border > 0 and self.config.border_color is not None:
             ctx.translate(border, border)
-            ctx.rectangle(0, 0, w - 2 * border, h - 2 * border)
-            ctx.clip()
             return w - 2 * border, h - 2 * border
 
         return w, h
 
-    def render_background(self, ctx, w, h, color):
-        if color is None:
-            return
-
-        ctx.rectangle(0, 0, w, h)
-        ctx.set_source_rgb(*color)
-        ctx.fill()
 
     def _mangle_svg(self, buf):
         try:
@@ -246,3 +248,4 @@ class RefShieldMaker(ShieldMaker):
         PangoCairo.update_layout(ctx, layout)
         ctx.move_to(x, y)
         PangoCairo.show_layout(ctx, layout)
+        ctx.new_path()

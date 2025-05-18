@@ -9,6 +9,7 @@ from math import pi
 import gi
 gi.require_version('Rsvg', '2.0')
 from gi.repository import Rsvg
+import cairo
 
 from ..common.tags import Tags
 from ..common.config import ShieldConfig
@@ -21,22 +22,16 @@ class TransparentBackground:
         return 'empty'
 
     @classmethod
-    def paint(cls, ctx, _):
-        ctx.set_source_rgba(1, 1, 1) # white
-        ctx.rectangle(0, 0, 1, 1)
-        ctx.fill()
+    def to_inner(cls, ctx, w, h):
+        return w, h
 
     @classmethod
-    def paint_canvas(cls, ctx, w, h, border, color):
-        ctx.rectangle(0, 0, w, h)
-        ctx.set_source_rgb(*color)
-        ctx.fill()
-        if border > 0:
-            ctx.translate(border, border)
-            ctx.rectangle(0, 0, w - 2 * border, h - 2 * border)
-            ctx.clip()
+    def paint(cls, *_):
+        pass
 
-        return w - 2 * border, h - 2 * border
+    @classmethod
+    def stroke_frame_path(cls, ctx, w, h, border):
+        return False
 
     @classmethod
     def max_textlen(cls):
@@ -46,44 +41,57 @@ class TransparentBackground:
     def adjust_dimensions(cls, w, h):
         return w, h
 
+    @classmethod
+    def background_color(cls, config):
+        return None
+
 class BackgroundImage:
     """ Helper class for creating the background of an OSMC symbol.
     """
-    FRAME_WIDTH = 0.1
+    FRAME_WIDTH = 2.0
 
     def __init__(self, color: str, symbol: str | None) -> None:
         self.color = color
         self.symbol = symbol if symbol is None or hasattr(self, '_paint_' + symbol) else None
 
     def uuid(self) -> str:
-        return f"{self.color}_{self.symbol}" if self.symbol else self.color
+        return f"{self.color}-{self.symbol}" if self.symbol else self.color
 
-    def paint(self, ctx, config):
+    def to_inner(self, ctx, w, h):
+        """ Restricts the part to be used for drawing the foreground
+            if necessary. Only used for framed backgrounds.
+        """
+        match self.symbol:
+            case 'circle' | 'frame':
+                ctx.translate(self.FRAME_WIDTH, self.FRAME_WIDTH)
+                return w - 2 * self.FRAME_WIDTH, h - 2 * self.FRAME_WIDTH
+            case 'diamond':
+                ctx.translate(0.05 * w, 0.05 * h)
+                return 0.9 * w, 0.9 * h
+            case 'diamond_line':
+                ctx.translate(0.05 * w + self.FRAME_WIDTH, 0.05 * h + self.FRAME_WIDTH)
+                return 0.9 * w - self.FRAME_WIDTH * 2, 0.9 * h - self.FRAME_WIDTH * 2
+            case _:
+                return w, h
+
+    def paint(self, ctx, w, h, config):
         """ Draw the background as described.
             Will adjust the canvas for drawing of the inner part.
         """
-        if self.symbol is None:
-            col = self.color
-        else:
-            col = 'black' if self.color == 'white' else 'white'
-
-        ctx.rectangle(0, 0, 1, 1)
-        ctx.set_source_rgb(*config.osmc_colors[col])
-        ctx.fill()
-
         if self.symbol is not None:
             ctx.set_source_rgb(*config.osmc_colors[self.color])
             func = getattr(self, f'_paint_{self.symbol}')
-            func(ctx, config)
+            func(ctx, w, h, config)
 
-    def paint_canvas(self, ctx, w, h, border, color):
+
+    def stroke_frame_path(self, ctx, w, h, border):
         match self.symbol:
             case 'circle' | 'round':
-                return self._canvas_circle(ctx, w, h, border, color)
+                return self._frame_path_circle(ctx, w, h, border)
             case 'diamond' | 'diamond_line':
-                return self._canvas_diamond(ctx, w, h, border, color)
+                return self._frame_path_diamond(ctx, w, h, border)
             case _:
-                return TransparentBackground.paint_canvas(ctx, w, h, border, color)
+                False
 
     def max_textlen(self):
         match self.symbol:
@@ -105,105 +113,63 @@ class BackgroundImage:
             case _:
                 return w, h
 
-    def _paint_bar(self, ctx, config):
+    def background_color(self, config):
+        match self.symbol:
+            case 'circle' | 'frame' | 'diamond_line':
+                return config.osmc_colors['black' if self.color == 'white' else 'white']
+            case _:
+                return config.osmc_colors[self.color]
+
+    def _paint_bar(self, *_):
         pass # only changes dimensions
 
-    def _paint_stripe(self, ctx, config):
+    def _paint_stripe(self, *_):
         pass # only changes dimensions
 
-    def _paint_diamond(self, ctx, config):
-        ctx.move_to(0.5, 0)
-        ctx.line_to(1, 0.5)
-        ctx.line_to(0.5, 1)
-        ctx.line_to(0, 0.5)
-        ctx.fill()
+    def _paint_diamond(self, ctx, w, h, config):
+        pass
 
-
-    def _paint_diamond_line(self, ctx, config):
+    def _paint_diamond_line(self, ctx, w, h, config):
         ctx.set_line_width(self.FRAME_WIDTH)
-        ctx.move_to(0.5, self.FRAME_WIDTH / 2)
-        ctx.line_to(1 - self.FRAME_WIDTH / 2, 0.5)
-        ctx.line_to(0.5, 1 - self.FRAME_WIDTH / 2)
-        ctx.line_to(self.FRAME_WIDTH / 2, 0.5)
+        ctx.move_to(0.5 * w, self.FRAME_WIDTH / 2)
+        ctx.line_to(w - self.FRAME_WIDTH / 2, 0.5 * h)
+        ctx.line_to(0.5 * w, h - self.FRAME_WIDTH / 2)
+        ctx.line_to(self.FRAME_WIDTH / 2, 0.5 * h)
         ctx.close_path()
         ctx.stroke()
-        ctx.move_to(0.5, self.FRAME_WIDTH)
-        ctx.line_to(1 - self.FRAME_WIDTH, 0.5)
-        ctx.line_to(0.5, 1 - self.FRAME_WIDTH)
-        ctx.line_to(self.FRAME_WIDTH, 0.5)
-        ctx.clip()
-        ctx.translate(self.FRAME_WIDTH, self.FRAME_WIDTH)
-        ctx.scale(1.0 - 2 * self.FRAME_WIDTH, 1.0 - 2 * self.FRAME_WIDTH)
 
 
-    def _paint_circle(self, ctx, config):
+    def _paint_circle(self, ctx, w, h, config):
+        ctx.save()
+        ctx.scale(w, h)
+        ctx.arc(0.5, 0.5, 0.5 - self.FRAME_WIDTH / min(w, h) / 2, 0, 2 * pi)
+        ctx.restore()
         ctx.set_line_width(self.FRAME_WIDTH)
-        ctx.arc(0.5, 0.5, 0.5 - self.FRAME_WIDTH / 2, 0, 2 * pi)
         ctx.stroke()
-        ctx.arc(0.5, 0.5, 0.5 - self.FRAME_WIDTH, 0, 2 * pi)
-        ctx.clip()
-        ctx.translate(self.FRAME_WIDTH/2, self.FRAME_WIDTH/2)
-        ctx.scale(1.0 - self.FRAME_WIDTH, 1.0 - self.FRAME_WIDTH)
 
-    def _paint_frame(self, ctx, config):
+    def _paint_frame(self, ctx, w, h, config):
         ctx.set_line_width(self.FRAME_WIDTH)
         ctx.rectangle(self.FRAME_WIDTH/2, self.FRAME_WIDTH/2,
-                      1.0 - self.FRAME_WIDTH, 1.0 - self.FRAME_WIDTH)
+                      w - self.FRAME_WIDTH, h - self.FRAME_WIDTH)
         ctx.stroke()
 
-        ctx.rectangle(self.FRAME_WIDTH, self.FRAME_WIDTH,
-                      (1.0 - 2 * self.FRAME_WIDTH), (1.0 - 2 * self.FRAME_WIDTH))
-        ctx.clip()
-        ctx.translate(self.FRAME_WIDTH/2, self.FRAME_WIDTH/2)
-        ctx.scale(1.0 - self.FRAME_WIDTH, 1.0 - self.FRAME_WIDTH)
+    def _paint_round(self, ctx, w, h, config):
+        pass
 
-    def _paint_round(self, ctx, config):
-        ctx.arc(0.5, 0.5, 0.49, 0, 2*pi)
-        ctx.fill_preserve()
-        ctx.clip()
-        ctx.translate(0.01, 0.01)
-        ctx.scale(0.98, 0.98)
-
-    def _canvas_circle(self, ctx, w, h, border, color):
-        ctx.rectangle(0, 0, w, h)
-        ctx.set_source_rgba(0, 0, 0, 0) # transparent
-        ctx.fill()
-
+    def _frame_path_circle(self, ctx, w, h, border):
+        ctx.save()
         ctx.scale(w, h) # needed, so we can draw an ellipse
-        ctx.arc(0.5, 0.5, 0.5, 0, 2 * pi)
-        ctx.set_source_rgba(*color)
-        ctx.fill()
+        ctx.arc(0.5, 0.5, 0.5 - border / min(w, h), 0, 2 * pi)
+        ctx.restore()
+        return True
 
-        bscale = border / min(w, h)
-
-        ctx.translate(bscale, bscale)
-        ctx.arc(0.5 - bscale, 0.5 - bscale, 0.5 - bscale, 0, 2 * pi)
-        ctx.clip()
-
-        ctx.scale(1/w, 1/h) # go back to original scale
-        return w - 2 * border, h - 2 * border
-
-    def _canvas_diamond(self, ctx, w, h, border, color):
-        ctx.rectangle(0, 0, w, h)
-        ctx.set_source_rgba(0, 0, 0, 0) # transparent
-        ctx.fill()
-
-        ctx.set_source_rgb(*color)
+    def _frame_path_diamond(self, ctx, w, h, border):
         ctx.move_to(w/2, 0)
         ctx.line_to(w, h/2)
         ctx.line_to(w/2, h)
         ctx.line_to(0, h/2)
-        ctx.fill()
-
-        ctx.move_to(w/2, border)
-        ctx.line_to(w - border, h/2)
-        ctx.line_to(w/2, h - border)
-        ctx.line_to(border, h/2)
-        ctx.clip()
-
-        ctx.translate(border, border)
-
-        return w - 2 * border, h - 2 * border
+        ctx.close_path()
+        return True
 
 class ForegroundImage:
     """ Helper class for adding a foreground to an OSMC symbol.
@@ -221,7 +187,7 @@ class ForegroundImage:
         return hasattr(self, '_paint_' + symbol)
 
     def uuid(self) -> str:
-        return f"{self.symbol}_{self.color}"
+        return f"{self.color}-{self.symbol}"
 
     def paint(self, ctx, shield):
         self._config = shield.config
@@ -662,16 +628,21 @@ class OsmcSymbol(RefShieldMaker):
 
         return '_'.join(parts)
 
-    def render(self, ctx, w, h):
+    def render(self, ctx):
+        w, h = self.render_background(ctx, self.bg.background_color(self.config))
+
         ctx.save()
-        ctx.scale(w, h)
+        innerw, innerh = self.bg.to_inner(ctx, w, h)
 
-        self.bg.paint(ctx, self.config)
-        for fg in self.fgs:
-            fg.paint(ctx, self)
+        # foreground gets painted with 1,1 matrix
+        if self.fgs:
+            ctx.save()
+            ctx.scale(innerw, innerh)
+            for fg in self.fgs:
+                fg.paint(ctx, self)
+            ctx.restore()
 
-        ctx.restore()
-        # reference text
+        # reference text gets painted with original scale
         if self.ref:
             layout, tw, baseh = self.layout_ref(ctx, self.config.text_font)
 
@@ -679,8 +650,31 @@ class OsmcSymbol(RefShieldMaker):
 
             self.render_layout(
                 ctx, layout, color=self.config.osmc_colors[self.textcolor],
-                x=(w - tw)/2,
-                y=(h - bnd_wd - baseh)/2.0)
+                x=(innerw - tw)/2,
+                y=(innerh - bnd_wd - baseh)/2.0)
+
+        ctx.restore() # restore to full image
+        self.bg.paint(ctx, w, h, self.config)
+
+    def render_frame(self, ctx):
+        w, h = self.dimensions()
+        border = self.config.image_border_width or 0
+
+        if self.bg.stroke_frame_path(ctx, w, h, border):
+            if border > 0:
+                ctx.set_line_width(border)
+                ctx.set_source_rgb(*self.config.border_color)
+                ctx.stroke_preserve()
+            ctx.rectangle(-border, -border, w + border, h + border)
+            ctx.set_operator(cairo.Operator.SOURCE)
+            ctx.set_source_rgba(0, 0, 0, 0)
+            ctx.set_fill_rule(cairo.FillRule.EVEN_ODD)
+            ctx.fill()
+            ctx.set_operator(cairo.Operator.OVER)
+        elif border > 0:
+                ctx.rectangle(border/2, border/2, w - border, h - border)
+                ctx.set_source_rgb(*self.config.border_color)
+                ctx.stroke()
 
     def render_canvas(self, ctx):
         border = self.config.image_border_width or 0

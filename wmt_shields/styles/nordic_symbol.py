@@ -18,7 +18,9 @@ class ColorBoxSymbol(ShieldMaker):
         self.color = color.rgb
         self.uuid_pattern = f'nordic_{{}}_{color.name}'
 
-    def render(self, ctx, w, h):
+    def render(self, ctx):
+        bgcolor = (1, 1, 1) if (self.config.image_border_width or 0) > 0 else None
+        w, h = self.render_background(ctx, bgcolor)
         ctx.arc(w/2, h/2, w/2, 0, 2*pi)
         ctx.set_source_rgb(*self.color)
         ctx.fill()

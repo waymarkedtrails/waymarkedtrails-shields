@@ -30,7 +30,8 @@ class KctSymbol(ShieldMaker):
         return (int((self.config.image_width or 16) + 0.5 * bwidth),
                 int((self.config.image_height or 16) + 0.5 * bwidth))
 
-    def render(self, ctx, w, h):
+    def render(self, ctx):
+        w, h = self.render_background(ctx, None)
         # get the template file
         content = self.find_resource(self.config.kct_path, f'{self.symbol}.svg').decode('utf8')
         # patch in the correct color
