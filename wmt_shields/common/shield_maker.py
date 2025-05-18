@@ -128,6 +128,7 @@ class ShieldMaker(object):
             # set background in border color
             ctx.rectangle(border/2, border/2, w - border, h - border)
             ctx.set_source_rgb(*self.config.border_color)
+            ctx.set_line_width(border)
             ctx.stroke()
 
     def render_background(self, ctx, color):
@@ -153,8 +154,12 @@ class ShieldMaker(object):
             raise RuntimeError("Cannot parse SVG shield.")
 
         for svg in dom.getElementsByTagName("svg"):
-            sym_ele = svg.getElementsByTagName("symbol")
             image_ele = svg.getElementsByTagName("image")
+            # image elements are not supported by Mapnik. Remove.
+            for e in svg.getElementsByTagName("image"):
+                e.parentNode.removeChild(e)
+
+            sym_ele = svg.getElementsByTagName("symbol")
             use_ele = svg.getElementsByTagName("use")
 
             if sym_ele.length == 0 or use_ele.length == 0:
@@ -163,10 +168,6 @@ class ShieldMaker(object):
             symbols = {}
             for e in sym_ele:
                 symbols['#' + e.getAttribute('id')] = e.cloneNode(True)
-                e.parentNode.removeChild(e)
-
-            # image elements are not supported by Mapnik. Remove.
-            for e in image_ele:
                 e.parentNode.removeChild(e)
 
             for e in use_ele:

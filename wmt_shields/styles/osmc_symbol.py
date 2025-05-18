@@ -109,7 +109,7 @@ class BackgroundImage:
             case 'bar':
                 return w, 0.6*h
             case 'diamond' | 'diamond_line':
-                return 1.4 * w, h
+                return int(1.4 * w), h
             case _:
                 return w, h
 
@@ -164,10 +164,10 @@ class BackgroundImage:
         return True
 
     def _frame_path_diamond(self, ctx, w, h, border):
-        ctx.move_to(w/2, 0)
-        ctx.line_to(w, h/2)
-        ctx.line_to(w/2, h)
-        ctx.line_to(0, h/2)
+        ctx.move_to(w/2, border)
+        ctx.line_to(w - border, h/2)
+        ctx.line_to(w/2, h - border)
+        ctx.line_to(border, h/2)
         ctx.close_path()
         return True
 
@@ -660,30 +660,18 @@ class OsmcSymbol(RefShieldMaker):
         w, h = self.dimensions()
         border = self.config.image_border_width or 0
 
+        # None-rectangular shapes require clipping. This is not yet supported
+        # by Mapnik, so we'll resort to the rectangular frame here.
         if self.bg.stroke_frame_path(ctx, w, h, border):
-            if border > 0:
-                ctx.set_line_width(border)
-                ctx.set_source_rgb(*self.config.border_color)
-                ctx.stroke_preserve()
-            ctx.rectangle(-border, -border, w + border, h + border)
-            ctx.set_operator(cairo.Operator.SOURCE)
-            ctx.set_source_rgba(0, 0, 0, 0)
+            ctx.rectangle(0, 0, w, h)
+            ctx.set_source_rgba(1, 1, 1, 1)
             ctx.set_fill_rule(cairo.FillRule.EVEN_ODD)
             ctx.fill()
-            ctx.set_operator(cairo.Operator.OVER)
-        elif border > 0:
-                ctx.rectangle(border/2, border/2, w - border, h - border)
-                ctx.set_source_rgb(*self.config.border_color)
-                ctx.stroke()
 
-    def render_canvas(self, ctx):
-        border = self.config.image_border_width or 0
-        w, h = self.dimensions()
-
-        if self.config.border_color is None:
-            border = 0
-
-        return self.bg.paint_canvas(ctx, w, h, border, self.config.border_color)
+        ctx.rectangle(border/2, border/2, w - border, h - border)
+        ctx.set_source_rgb(*self.config.border_color)
+        ctx.set_line_width(border)
+        ctx.stroke()
 
     def render_svg(self, ctx, name, color):
         content = self.find_resource(self.config.osmc_path, name + '.svg')
