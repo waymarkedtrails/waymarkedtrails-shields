@@ -28,7 +28,7 @@ class SlopeSymbol(RefShieldMaker):
         return 'slope_{}_{}'.format(
                   self.config.style or 'None', self.config.difficulty)
 
-    def render(self, ctx, w, h):
+    def render(self, ctx):
         bgcolor = (1, 1, 1) if (self.config.image_border_width or 0) > 0 else None
         w, h = self.render_background(ctx, bgcolor)
         # background fill
