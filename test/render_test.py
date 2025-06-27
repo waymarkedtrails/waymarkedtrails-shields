@@ -134,10 +134,8 @@ if __name__ == "__main__":
     for bg in OSMC_BACKGROUNDS:
         for fg in OSMC_FOREGROUNDS:
             testsymbols.append(('LOC', '', { 'osmc:symbol' : f"white:green{bg}:black{fg}"}))
-
-    for bg in OSMC_BACKGROUNDS:
-        for fg in OSMC_FOREGROUNDS:
             testsymbols.append(('LOC', '', { 'osmc:symbol' : f"red:red{bg}:green{fg}:A:black"}))
+            testsymbols.append(('LOC', '', { 'osmc:symbol' : f"red:white{bg}:black{fg}"}))
 
 #    testsymbols = [('LOC', '', {'osmc:symbol': 'red:red:green_diamond_left:A:black'})]
 

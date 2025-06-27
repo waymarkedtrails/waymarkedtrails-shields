@@ -664,7 +664,10 @@ class OsmcSymbol(RefShieldMaker):
         # by Mapnik, so we'll resort to the rectangular frame here.
         if self.bg.stroke_frame_path(ctx, w, h, border):
             ctx.rectangle(0, 0, w, h)
-            ctx.set_source_rgba(1, 1, 1, 1)
+            if self.bg.color == 'white':
+                ctx.set_source_rgba(0, 0, 0, 1)
+            else:
+                ctx.set_source_rgba(1, 1, 1, 1)
             ctx.set_fill_rule(cairo.FillRule.EVEN_ODD)
             ctx.fill()
 
