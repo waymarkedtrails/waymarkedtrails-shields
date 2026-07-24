@@ -248,5 +248,6 @@ class RefShieldMaker(ShieldMaker):
 
         PangoCairo.update_layout(ctx, layout)
         ctx.move_to(x, y)
-        PangoCairo.show_layout(ctx, layout)
+        PangoCairo.layout_path(ctx, layout)
+        ctx.fill();
         ctx.new_path()
