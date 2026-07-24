@@ -116,17 +116,27 @@ if __name__ == "__main__":
         ('novice', '', { 'piste:type' : 'downhill', 'piste:ref' : 'XX'}),
      ]
 
-    JEL = ['3', 'but', 'fbor', 'fkor', 'fq', 'fx', 'katlv', 'kivv', 'kor',
-           'kt', 'lb', 'llo', 'lq', 'lx', '4', 'c', 'fb', 'flo', 'f+', 'ii',
-           'kbor', 'kkor', 'kpec', 'kx', 'lc', 'll', 'ls', 'mberc', 'atl',
-           'eml', 'fc', 'fl', 'f', 'ivv', 'kb', 'klo', 'kq', 'l3', 'leml',
-           'lm', 'l+', 'm', 'atlv', 'f3', 'feml', 'fm', 'ftfl', 'k3', 'kc',
-           'kl', 'k+', 'l4', 'lfut', 'lmtb', 'l', 'mtb', 'bfk', 'f4', 'ffut',
-           'fmtb', 'ftmp', 'k4', 'keml', 'km', 'k', 'latl', 'lii', 'lnw',
-           'ltfl', 'nw', 'bor', 'fatl', 'fii', 'fnw', 'ft', 'karsztb', 'kfut',
-           'kmtb', 'ktfl', 'latlv', 'livv', 'lo', 'ltmp', 'p3', 'b', 'fatlv',
-           'fivv', 'fpec', 'fut', 'katl', 'kii', 'knw', 'ktmp', 'lbor',
-           'lkor', 'lpec', 'lt', 'p4']
+    JEL = ["3","4","atl","atlv","bfk","bor","b","but","c","eml","f3","f4",
+           "fatl","fatlv","fbor","fb","fc","feml","ffut","fii","fivv",
+           "fkor","flo","fl","fm","fmtb","fnw","fpec","fput","f","f+","fq",
+           "ftfl","ftmp","ft","fut","fx","hput","ii","ivv","k3","k4","karsztb",
+           "katl","katlv","kbor","kb","kc","keml","kfut","kii","kivv","kkor",
+           "klhr", "klo","kl","km","kmtb","knw","kor","kpec","k","k+","kq",
+           "ktfl","ktmp","kt","kx","l3","l4","latl","latlv","lbor","lb","lc",
+           "ldu","leml","lfut","lii","livv","lkor","llo","ll","lm","lmtb","lnw",
+           "lo","lpec","l","l+","lq","ls","ltfl","ltmp","lt","lx","mberc",
+           "m","mtb","nw","p3","p4","palma","palp","patl","patlv","pbor",
+           "pb","pc","pec","pek","peml","pfut","pii","pivv","pkor","plhr","plo",
+           "pl","pmet","pm","pmtb","+","pnw","ppec","p","p+","pq","prst","pstm",
+           "psziv","pszolo","ptfl","ptmp","pt","px","q","rc","refut","s3","s4",
+           "salp","satl","satlv","sbarack","sbor","sb","sc","seml","sfut","sgy",
+           "shor","sii","sivv","skor","slhr","slo","sl","sm","smtb","smz","snw",
+           "spec","s","s+","sq","sszolo","ste","stfl","stj","stm","stmp","st","sx",
+           "sz","tfl","tmp","tny","torp+","t","vcv","x","z3","z4","zatl","zatlv",
+           "zbic","zbor","zb","zc","zeml","zfut","zii","zivv","zkor","zlhr","zlo",
+           "zl","zkroki","zm","zmtb","znw","zpec","z","z+","zq","zszolo","zsziv",
+           "ztfl","ztmp","zt","zut","zuveg","zx"
+           ]
 
     for symbol in JEL:
         testsymbols.append(('LOC', '', { 'jel' : symbol, 'ref' : 'yy'}))
